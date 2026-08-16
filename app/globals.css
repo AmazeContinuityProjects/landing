@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@source "../node_modules/@amazecontinuityprojects/amazeui";
+@source "../node_modules/@amazecontinuityprojects/amazeui/dist";
 
 :root {
   --background: #ffffff;
