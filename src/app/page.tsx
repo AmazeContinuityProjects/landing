@@ -1,11 +1,11 @@
 import { Hero } from "../components/home/Hero";
-import { ProjectGrid } from "../components/home/ProjectGrid";
+import { FocusAccordion } from "../components/home/FocusAccordian";
 
 export default function Home() {
   return (
     <div className="w-full">
       <Hero />
-      <ProjectGrid />
+      <FocusAccordion />
     </div>
   );
 }
