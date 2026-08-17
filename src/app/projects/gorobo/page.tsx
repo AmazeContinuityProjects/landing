@@ -15,6 +15,33 @@ const HARDWARE_CATALOG = [
   { id: "hw_6", name: "Jumper Wires (M-M/M-F)", category: "Accessories", price: 80, stock: true },
 ];
 
+const TEAM_MEMBERS = [
+  { 
+    name: "Prateet Gogia", 
+    role: "Lead Developer", 
+    id: "25BCE1452", 
+    avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=Prateet&backgroundColor=5c4dff" 
+  },
+  { 
+    name: "Sumit", 
+    role: "UI/UX Engineer", 
+    id: "25BCE1453", 
+    avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=Sumit&backgroundColor=10b981" 
+  },
+  { 
+    name: "Naruto", 
+    role: "Backend Architect", 
+    id: "25BCE1454", 
+    avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=Naruto&backgroundColor=f59e0b" 
+  },
+  { 
+    name: "Sasuke", 
+    role: "Systems Engineer", 
+    id: "25BCE1455", 
+    avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=Sasuke&backgroundColor=ef4444" 
+  },
+];
+
 // Mock Data for Order History
 const ORDER_HISTORY = [
   {
@@ -201,7 +228,61 @@ export default function GoRoboDashboard() {
             </Card>
 
           </div>
+
         </div>
+        {/* --- INTERACTIVE SECTION 3: TEAM MARQUEE --- */}
+                <section className="space-y-8 pt-16 mt-16 border-t border-white/5 pb-12 overflow-hidden">
+                  <div className="text-center">
+                    <span className="font-mono text-xs font-bold text-indigo-400 uppercase tracking-widest">
+                      Core Maintainers
+                    </span>
+                    <h2 className="mt-2 text-2xl font-bold text-white">The Engineering Team</h2>
+                  </div>
+        
+                  {/* Injecting raw CSS for the infinite scroll animation */}
+                  <style dangerouslySetInnerHTML={{ __html: `
+                    @keyframes infinite-scroll {
+                      0% { transform: translateX(0); }
+                      100% { transform: translateX(-50%); }
+                    }
+                    .animate-infinite-scroll {
+                      animation: infinite-scroll 25s linear infinite;
+                      width: max-content;
+                    }
+                    .animate-infinite-scroll:hover {
+                      animation-play-state: paused;
+                    }
+                    );
+                    }
+                  `}} />
+        
+                  {/* Marquee Track Container */}
+                  <div className="relative flex w-full overflow-hidden mask-horizontal-fades">
+                    
+                    {/* The Scrolling Track (Rendered twice for seamless looping) */}
+                    <div className="flex animate-infinite-scroll items-center gap-6 py-4 px-3">
+                      
+                      {[...TEAM_MEMBERS, ...TEAM_MEMBERS].map((member, idx) => (
+                        <Card 
+                          key={`${member.id}-${idx}`} 
+                          className="flex w-72 shrink-0 items-center gap-4 border-white/10 bg-black/40 p-4 transition-colors hover:border-[#5C4DFF]/50 hover:bg-white/[0.04]"
+                        >
+                          <img 
+                            src={member.avatar} 
+                            alt={member.name} 
+                            className="h-14 w-14 rounded-full border-2 border-white/10 bg-black object-cover" 
+                          />
+                          <div>
+                            <h4 className="font-bold text-white">{member.name}</h4>
+                            <p className="font-mono text-[10px] text-indigo-400">{member.role}</p>
+                            <p className="mt-1 font-mono text-[10px] text-slate-500">ID: {member.id}</p>
+                          </div>
+                        </Card>
+                      ))}
+        
+                    </div>
+                  </div>
+                </section>
       </div>
     </div>
   );
