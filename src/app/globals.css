@@ -120,7 +120,8 @@ body::before {
 }
 
 .nav-frost-menu {
-  background: rgba(8, 13, 13, 0.92);
+  /* Nearly opaque: the hero's giant headline must not show through the links. */
+  background: rgba(7, 11, 11, 0.98);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-top-color: rgba(255, 255, 255, 0.24);
   backdrop-filter: blur(28px) saturate(190%);
@@ -137,6 +138,15 @@ body::before {
     radial-gradient(120% 140% at 100% 100%, rgb(143 211 255 / 0.6), transparent 55%),
     radial-gradient(90% 120% at 55% 40%, rgb(237 203 255 / 0.85), transparent 70%),
     #f4f1fa;
+}
+
+/* Backplate for flagship cards: a softer holographic wash a glass panel floats on. */
+.holo-plate {
+  background:
+    radial-gradient(90% 120% at 0% 0%, rgb(157 245 180 / 0.55), transparent 60%),
+    radial-gradient(90% 120% at 100% 100%, rgb(60 76 255 / 0.55), transparent 60%),
+    radial-gradient(70% 90% at 60% 30%, rgb(237 203 255 / 0.65), transparent 70%),
+    #20203a;
 }
 
 /* Ribbed glass, like light through a fluted pane. */
@@ -185,6 +195,11 @@ body::before {
   to { opacity: 1; transform: none; filter: none; }
 }
 
+@keyframes glint {
+  from { stroke-dashoffset: 0.07; }
+  to { stroke-dashoffset: -1; }
+}
+
 @keyframes grow {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
@@ -214,6 +229,48 @@ body::before {
   transform: none;
 }
 
+/* Custom cursor: only hides the system cursor once <CustomCursor> is active. */
+.has-custom-cursor,
+.has-custom-cursor * {
+  cursor: none !important;
+}
+.has-custom-cursor input,
+.has-custom-cursor textarea,
+.has-custom-cursor select,
+.has-custom-cursor [contenteditable="true"] {
+  cursor: text !important;
+}
+.has-custom-cursor select {
+  cursor: pointer !important;
+}
+.cursor-head {
+  transition: filter 0.2s ease;
+}
+.cursor-head svg path {
+  transition: fill 0.2s ease;
+}
+.cursor-head[data-hover="true"] svg path {
+  fill: var(--mint);
+}
+.cursor-head[data-hover="true"] {
+  filter: drop-shadow(0 0 10px rgb(157 245 180 / 0.6));
+}
+/* Selection frame around the hovered element, like a selected layer. */
+.cursor-frame {
+  border: 1.5px solid var(--volt);
+  box-shadow:
+    0 0 0 1px rgb(60 76 255 / 0.18),
+    0 0 28px -4px rgb(60 76 255 / 0.55);
+}
+/* Click ripple. */
+@keyframes cursor-ripple {
+  from { opacity: 0.9; transform: translate(-50%, -50%) scale(0.2); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+}
+.cursor-ripple-run {
+  animation: cursor-ripple 0.5s cubic-bezier(0.2, 0.7, 0.1, 1) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -222,4 +279,5 @@ body::before {
   }
   [data-reveal] { opacity: 1; transform: none; }
   .ribbon-path { stroke-dashoffset: 0 !important; }
+  .ribbon-glint { display: none; }
 }

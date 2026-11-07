@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HERO } from "../../content/site";
 import { Ribbon } from "./Ribbon";
+import { CollaboratorCursors } from "./CollaboratorCursors";
 
 const RIBBON =
   "M -60 520 C 120 470, 220 600, 380 560 S 560 380, 700 470 S 820 690, 980 610 S 1180 300, 1320 360 S 1480 520, 1560 470";
@@ -24,7 +25,7 @@ function CursorTrail() {
 export function Hero() {
   const [l1, l2, l3] = HERO.lines;
   return (
-    <section className="relative isolate min-h-[100svh] overflow-hidden pt-32 sm:pt-40">
+    <section className="relative isolate min-h-[100svh] overflow-hidden pb-16 pt-32 sm:pt-40">
       {/* Atmosphere: a teal-black wash with two soft glows. */}
       <div aria-hidden className="absolute inset-0 -z-20 bg-[radial-gradient(80%_60%_at_70%_10%,rgba(60,76,255,0.18),transparent_60%),radial-gradient(60%_50%_at_10%_30%,rgba(157,245,180,0.08),transparent_60%)]" />
       {/* Fine line art, like the contour lines in the security shot. */}
@@ -40,7 +41,7 @@ export function Hero() {
             <span className="mr-2 inline-block h-2 w-2 rounded-full bg-mint align-middle animate-pulse-dot" />
             {HERO.eyebrow}
           </p>
-          <h1 className="font-display mt-6 text-[13vw] font-black uppercase leading-[0.86] sm:text-[10vw] lg:text-[6.4rem]">
+          <h1 className="font-display mt-6 text-[11.2vw] font-black uppercase leading-[0.86] sm:text-[10vw] lg:text-[6.4rem]">
             <span className="animate-rise text-iridescent block" style={{ animationDelay: "150ms" }}>
               {l1}
             </span>
@@ -58,14 +59,16 @@ export function Hero() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href={HERO.primary.href}
-              className="group inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-mint px-5 py-3 text-sm font-semibold text-ink transition hover:brightness-110 active:scale-95"
+              data-cursor="Explore"
+              className="group inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-mint px-4 py-3 text-sm font-semibold text-ink transition hover:brightness-110 active:scale-95"
             >
               {HERO.primary.label}
               <span aria-hidden className="transition group-hover:translate-x-0.5">↓</span>
             </Link>
             <Link
               href={HERO.secondary.href}
-              className="inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-mist active:scale-95"
+              data-cursor="Apply"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl border border-white/20 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-ink active:scale-95"
             >
               {HERO.secondary.label}
             </Link>
@@ -74,18 +77,73 @@ export function Hero() {
       </div>
 
       {/* The stage: ribbon, a fluted glass pane and floating product fragments. */}
-      <div className="relative mx-auto mt-6 h-[420px] max-w-[1500px] sm:-mt-10 sm:h-[520px]">
+      {/* Decorative only: it overlaps the CTAs above (negative margin), so it must not take clicks. */}
+      <div className="pointer-events-none relative mx-auto mt-6 h-[420px] max-w-[1500px] sm:-mt-10 sm:h-[520px]">
         <div aria-hidden className="ribbed absolute right-[6%] top-[12%] hidden h-[78%] w-[26%] rounded-sm opacity-70 md:block" />
+
+        {/* An editor window behind the ribbon, as if the page were being designed live. */}
+        <div aria-hidden data-collab-target className="absolute left-[4%] top-[22%] hidden h-[70%] w-[42%] rounded-xl border border-white/10 bg-white/[0.015] md:block">
+          <div className="flex items-center gap-1.5 border-b border-white/10 px-3 py-2">
+            <span className="h-2 w-2 rounded-full bg-[var(--volt)]" />
+            <span className="h-2 w-2 rounded-full bg-lilac" />
+            <span className="h-2 w-2 rounded-full bg-white/60" />
+          </div>
+          <div className="flex items-center gap-1 border-b border-white/10 px-2 py-1.5">
+            {["M3 2l9 5-4 1-2 5z", "M2 4h10v8H2z", "M7 2l5 3v5l-5 3-5-3V5z", "M2 7a5 5 0 1010 0A5 5 0 002 7z", "M7 1v3M7 10v3M1 7h3M10 7h3", "M2 3h4l1 2h5v6H2z"].map((d, i) => (
+              <span key={d} className={`grid h-6 w-6 place-items-center rounded-md ${i === 0 ? "bg-[var(--volt)]" : ""}`}>
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="white" strokeOpacity={i === 0 ? 1 : 0.55} strokeWidth="1.2">
+                  <path d={d} />
+                </svg>
+              </span>
+            ))}
+          </div>
+          <div className="w-1/3 space-y-3 border-r border-white/10 p-3">
+            {[64, 80, 52].map((w, i) => (
+              <div key={w} className="flex items-center gap-2">
+                <span className={`h-2 w-2 rounded-full border ${i === 2 ? "border-white bg-white" : "border-white/40"}`} />
+                <span className="h-1.5 rounded-full bg-white/15" style={{ width: `${w}%` }} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* A glossy torus floating beside the fluted pane. */}
+        <div aria-hidden data-collab-target className="animate-float absolute right-[31%] top-[30%] hidden lg:block" style={{ animationDelay: "-3s", "--r": "-12deg" } as React.CSSProperties}>
+          <svg width="150" height="150" viewBox="0 0 150 150">
+            <defs>
+              <radialGradient id="torus-shade" cx="35%" cy="30%" r="80%">
+                <stop offset="0%" stopColor="#ffffff" />
+                <stop offset="35%" stopColor="#edcbff" />
+                <stop offset="75%" stopColor="#3c4cff" />
+                <stop offset="100%" stopColor="#141a4d" />
+              </radialGradient>
+              <filter id="torus-grain">
+                <feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="2" result="n" />
+                <feColorMatrix in="n" type="saturate" values="0" result="m" />
+                <feComposite in="m" in2="SourceGraphic" operator="in" result="g" />
+                <feBlend in="SourceGraphic" in2="g" mode="overlay" />
+              </filter>
+            </defs>
+            <ellipse cx="75" cy="118" rx="44" ry="8" fill="black" opacity="0.45" filter="blur(6px)" />
+            <path
+              fillRule="evenodd"
+              d="M75 18a52 44 0 110 88 52 44 0 110-88zm0 26a24 18 0 100 36 24 18 0 100-36z"
+              fill="url(#torus-shade)"
+              filter="url(#torus-grain)"
+            />
+            <ellipse cx="58" cy="34" rx="16" ry="6" fill="white" opacity="0.55" transform="rotate(-18 58 34)" />
+          </svg>
+        </div>
         <Ribbon
           id="hero"
           d={RIBBON}
           viewBox="0 0 1500 760"
-          className="absolute inset-0 h-full w-full"
+          className="absolute inset-x-0 -bottom-16 -top-6 h-[calc(100%+5.5rem)] w-full"
           nodes={[[380, 560], [700, 470], [1320, 360]]}
         />
 
         {/* Attendance fragment */}
-        <div className="animate-float absolute left-[6%] top-[8%] w-56 rounded-2xl bg-white p-4 text-ink shadow-2xl sm:left-[14%] sm:w-64" style={{ "--r": "-4deg" } as React.CSSProperties}>
+        <div data-collab-target className="animate-float absolute left-[6%] top-[8%] w-56 rounded-2xl bg-white p-4 text-ink shadow-2xl sm:left-[14%] sm:w-64" style={{ "--r": "-4deg" } as React.CSSProperties}>
           <p className="font-mono text-[10px] uppercase tracking-widest text-ink/50">Attendance · BACSE203</p>
           <div className="mt-2 flex items-end justify-between">
             <span className="font-display text-4xl font-black">82%</span>
@@ -97,7 +155,7 @@ export function Hero() {
         </div>
 
         {/* Find classmates fragment */}
-        <div className="animate-float glass absolute right-[5%] top-[2%] hidden w-64 rounded-2xl p-4 sm:block" style={{ animationDelay: "-2s", "--r": "3deg" } as React.CSSProperties}>
+        <div data-collab-target className="animate-float glass absolute right-[5%] top-[2%] hidden w-64 rounded-2xl p-4 sm:block" style={{ animationDelay: "-2s", "--r": "3deg" } as React.CSSProperties}>
           <p className="font-mono text-[10px] uppercase tracking-widest text-white/50">Find classmates</p>
           <p className="mt-1 text-sm font-semibold text-white">BAMAT207 · Probability</p>
           <div className="mt-3 flex -space-x-2">
@@ -111,7 +169,7 @@ export function Hero() {
         </div>
 
         {/* Shipped comment with cursor trail */}
-        <div className="absolute bottom-[10%] left-[30%] hidden md:block">
+        <div data-collab-target className="absolute bottom-[10%] left-[30%] hidden md:block">
           <CursorTrail />
           <div className="animate-float mt-2 w-64 rounded-2xl bg-white p-4 text-ink shadow-2xl" style={{ animationDelay: "-4s" }}>
             <div className="flex items-center gap-2">
@@ -123,9 +181,11 @@ export function Hero() {
         </div>
 
         {/* FFCS slot chip */}
-        <div className="animate-float absolute bottom-[14%] right-[12%] rounded-xl border border-white/15 bg-ink-2/80 px-3 py-2 font-mono text-xs text-white shadow-xl backdrop-blur" style={{ animationDelay: "-1s" }}>
+        <div data-collab-target className="animate-float absolute bottom-[14%] right-[12%] rounded-xl border border-white/15 bg-ink-2/80 px-3 py-2 font-mono text-xs text-white shadow-xl backdrop-blur" style={{ animationDelay: "-1s" }}>
           <span className="text-mint">●</span> FFCS · A1+TA1 · no clash
         </div>
+        {/* Teammate cursors, living inside the illustration (not over the page). */}
+        <CollaboratorCursors />
       </div>
     </section>
   );

@@ -27,12 +27,33 @@ export function SectionHeading({
       </p>
       <h2 id={id} className="font-display mt-5 text-4xl font-black uppercase leading-[0.95] sm:text-6xl">
         <span className="text-iridescent block">{first}</span>
-        {rest.map((line) => (
-          <span key={line} className="block text-white">
+        {rest.map((line, i) => (
+          <span key={line} className={`block ${lines.length >= 3 && i === rest.length - 1 ? "text-outline" : "text-white"}`}>
             {line}
           </span>
         ))}
       </h2>
+    </div>
+  );
+}
+
+/**
+ * The continuity thread between sections: a slimmer ribbon sweeping across, so
+ * the line from the hero keeps running down the page.
+ */
+export function Thread({ id, flip = false }: { id: string; flip?: boolean }) {
+  return (
+    <div aria-hidden className="relative h-40 overflow-hidden sm:h-56">
+      <Ribbon
+        id={id}
+        d={flip ? "M -60 60 C 300 40, 520 200, 820 150 S 1240 30, 1560 120" : "M -60 150 C 280 190, 560 30, 860 90 S 1260 220, 1560 70"}
+        viewBox="0 0 1500 240"
+        className={`absolute inset-0 h-full w-full ${flip ? "opacity-70" : "opacity-80"}`}
+        from={flip ? "var(--volt)" : "var(--mint)"}
+        to={flip ? "var(--lilac)" : "var(--volt)"}
+        width={22}
+        delayMs={0}
+      />
     </div>
   );
 }
@@ -57,7 +78,7 @@ export function TechMarquee() {
 
 export function Stats() {
   return (
-    <section aria-label="By the numbers" className="mx-auto max-w-6xl px-6 py-24">
+    <section aria-label="By the numbers" className="mx-auto max-w-6xl px-6 py-16">
       <Reveal className="holo relative overflow-hidden rounded-[28px] px-6 py-12 text-ink sm:px-12">
         <div aria-hidden className="absolute inset-0 opacity-30 mix-blend-overlay [background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22140%22 height=%22140%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%221%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/%3E%3C/svg%3E')]" />
         <dl className="relative grid grid-cols-2 gap-y-10 lg:grid-cols-4">
@@ -77,7 +98,7 @@ export function Stats() {
 
 export function Mission() {
   return (
-    <section id="mission" aria-labelledby="mission-h" className="relative mx-auto max-w-6xl scroll-mt-28 px-6 py-24">
+    <section id="mission" aria-labelledby="mission-h" className="relative mx-auto max-w-6xl scroll-mt-28 px-6 py-20">
       <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-end">
         <Reveal>
           <SectionHeading id="mission-h" label={MISSION.label} lines={MISSION.headline} />
@@ -107,7 +128,7 @@ export function Mission() {
 
 export function Teams() {
   return (
-    <section id="teams" aria-labelledby="teams-h" className="relative mx-auto max-w-6xl scroll-mt-28 px-6 py-24">
+    <section id="teams" aria-labelledby="teams-h" className="relative mx-auto max-w-6xl scroll-mt-28 px-6 py-20">
       <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-end">
         <Reveal>
           <SectionHeading id="teams-h" label="The people" lines={["Four teams,", "one product"]} />
@@ -175,14 +196,15 @@ export function Teams() {
 
 export function Journey() {
   return (
-    <section id="journey" aria-labelledby="journey-h" className="relative scroll-mt-28 overflow-hidden py-24">
+    <section id="journey" aria-labelledby="journey-h" className="relative scroll-mt-28 overflow-hidden py-20">
       <div className="mx-auto max-w-6xl px-6">
         <Reveal>
           <SectionHeading id="journey-h" label="Journey" lines={["How we", "got here"]} />
         </Reveal>
       </div>
       <ol className="relative mx-auto mt-16 max-w-6xl px-6">
-        <span aria-hidden className="absolute left-[29px] top-2 h-[calc(100%-1rem)] w-px bg-gradient-to-b from-mint via-lilac to-volt sm:left-1/2" />
+        <span aria-hidden className="absolute left-[28px] top-2 h-[calc(100%-1rem)] w-[3px] rounded-full bg-gradient-to-b from-mint via-lilac to-volt sm:left-[calc(50%-1px)]" />
+        <span aria-hidden className="absolute left-[22px] top-2 h-[calc(100%-1rem)] w-4 rounded-full bg-gradient-to-b from-mint via-lilac to-volt opacity-30 blur-md sm:left-[calc(50%-7px)]" />
         {JOURNEY.map((j, i) => {
           const right = i % 2 === 1;
           return (
@@ -194,7 +216,7 @@ export function Journey() {
             >
               <span
                 aria-hidden
-                className={`absolute left-[22px] top-1.5 h-4 w-4 rounded-full border-2 border-ink ${j.current ? "bg-mint animate-pulse-dot" : "bg-lilac"} ${right ? "sm:-left-2" : "sm:left-auto sm:-right-2"}`}
+                className={`absolute left-[21px] top-1 h-[18px] w-[18px] rounded-full border-[3px] border-ink ring-2 ${j.current ? "bg-mint ring-mint/60 animate-pulse-dot" : "bg-white ring-lilac/50"} ${right ? "sm:-left-[9px]" : "sm:left-auto sm:-right-[9px]"}`}
               />
               <p className="font-mono text-xs uppercase tracking-widest text-mint">{j.date}</p>
               <h3 className="mt-2 text-xl font-semibold text-white">{j.title}</h3>
@@ -231,6 +253,7 @@ export function FinalCta() {
           <p className="mx-auto mt-6 max-w-xl text-lg text-white/70">{FINAL_CTA.body}</p>
           <Link
             href={FINAL_CTA.cta.href}
+            data-cursor="Apply"
             className="mt-10 inline-flex items-center gap-2 rounded-2xl bg-mist px-7 py-4 text-base font-semibold text-ink shadow-[0_20px_60px_-15px_rgba(237,203,255,0.6)] transition hover:bg-white active:scale-95"
           >
             {FINAL_CTA.cta.label} <span aria-hidden>→</span>

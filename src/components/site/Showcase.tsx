@@ -22,16 +22,25 @@ function FeatureCard({ feature, delay }: { feature: Feature; delay: number }) {
       <div aria-hidden className="pointer-events-none absolute -inset-px rounded-3xl bg-[radial-gradient(60%_50%_at_50%_0%,rgba(237,203,255,0.12),transparent_70%)] opacity-0 transition duration-500 group-hover:opacity-100" />
       <h3 className={`relative font-semibold text-white ${big ? "text-2xl sm:text-3xl" : "text-lg"}`}>{feature.title}</h3>
       <p className={`relative mt-2 text-white/60 ${big ? "max-w-lg text-base" : "text-sm"}`}>{feature.body}</p>
-      <div className="relative mt-6 flex-1">
-        <FeatureVisualView visual={feature.visual} />
-      </div>
+      {feature.size === "xl" || feature.size === "wide" ? (
+        // The flagship treatment: a glass panel floating on a holographic plate.
+        <div className="holo-plate relative mt-6 flex-1 rounded-2xl pb-2 pl-5 pr-2 pt-5 sm:pb-3 sm:pl-8 sm:pr-3 sm:pt-8">
+          <div className="h-full rounded-xl border border-white/15 bg-ink/85 p-4 shadow-[0_24px_50px_-20px_rgba(0,0,0,0.9)] backdrop-blur-md">
+            <FeatureVisualView visual={feature.visual} />
+          </div>
+        </div>
+      ) : (
+        <div className="relative mt-6 flex-1">
+          <FeatureVisualView visual={feature.visual} />
+        </div>
+      )}
     </Reveal>
   );
 }
 
 export function AmazeCCShowcase() {
   return (
-    <section id="amazecc" aria-labelledby="amazecc-h" className="relative mx-auto max-w-6xl scroll-mt-28 px-6 py-24">
+    <section id="amazecc" aria-labelledby="amazecc-h" className="relative mx-auto max-w-6xl scroll-mt-28 px-6 py-20">
       <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-end">
         <Reveal>
           <SectionHeading id="amazecc-h" label={`${AMAZECC.label} · ${AMAZECC.name}`} lines={AMAZECC.headline} />
@@ -41,6 +50,7 @@ export function AmazeCCShowcase() {
           <div className="mt-7 flex flex-wrap gap-3">
             <a
               href={AMAZECC.link.href}
+              data-cursor="Open app"
               className="inline-flex items-center gap-2 rounded-xl bg-mint px-5 py-3 text-sm font-semibold text-ink transition hover:brightness-110 active:scale-95"
             >
               {AMAZECC.link.label} <span aria-hidden>↗</span>
@@ -82,7 +92,7 @@ export function AmazeCCShowcase() {
 export function GoRoboSection() {
   const max = Math.max(...GOROBO.categories.map((c) => c.count));
   return (
-    <section id="gorobo" aria-labelledby="gorobo-h" className="relative scroll-mt-28 overflow-hidden py-24">
+    <section id="gorobo" aria-labelledby="gorobo-h" className="relative scroll-mt-28 overflow-hidden py-20">
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_80%_50%,rgba(157,245,180,0.08),transparent_70%)]" />
       <div className="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-2 lg:items-center">
         <Reveal>
