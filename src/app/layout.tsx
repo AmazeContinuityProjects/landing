@@ -3,6 +3,7 @@ import { Archivo, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { GlassNav } from "../components/site/GlassNav";
 import { SiteFooter } from "../components/site/SiteFooter";
+import { CustomCursor } from "../components/site/CustomCursor";
 
 // Display: Archivo with its width axis, set expanded in .font-display.
 const display = Archivo({
@@ -53,6 +54,7 @@ export default function RootLayout({
           {children}
         </main>
         <SiteFooter />
+        <CustomCursor />
       </body>
     </html>
   );

@@ -194,6 +194,11 @@ body::before {
   to { opacity: 1; transform: none; filter: none; }
 }
 
+@keyframes glint {
+  from { stroke-dashoffset: 0.07; }
+  to { stroke-dashoffset: -1; }
+}
+
 @keyframes grow {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
@@ -223,6 +228,33 @@ body::before {
   transform: none;
 }
 
+/* Custom cursor: only hides the system cursor once <CustomCursor> is active. */
+.has-custom-cursor,
+.has-custom-cursor * {
+  cursor: none !important;
+}
+.has-custom-cursor input,
+.has-custom-cursor textarea,
+.has-custom-cursor select,
+.has-custom-cursor [contenteditable="true"] {
+  cursor: text !important;
+}
+.has-custom-cursor select {
+  cursor: pointer !important;
+}
+.cursor-head {
+  transition: filter 0.2s ease;
+}
+.cursor-head svg path {
+  transition: fill 0.2s ease;
+}
+.cursor-head[data-hover="true"] svg path {
+  fill: var(--mint);
+}
+.cursor-head[data-hover="true"] {
+  filter: drop-shadow(0 0 10px rgb(157 245 180 / 0.6));
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -231,4 +263,5 @@ body::before {
   }
   [data-reveal] { opacity: 1; transform: none; }
   .ribbon-path { stroke-dashoffset: 0 !important; }
+  .ribbon-glint { display: none; }
 }

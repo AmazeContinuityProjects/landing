@@ -253,6 +253,7 @@ export function FinalCta() {
           <p className="mx-auto mt-6 max-w-xl text-lg text-white/70">{FINAL_CTA.body}</p>
           <Link
             href={FINAL_CTA.cta.href}
+            data-cursor="Apply"
             className="mt-10 inline-flex items-center gap-2 rounded-2xl bg-mist px-7 py-4 text-base font-semibold text-ink shadow-[0_20px_60px_-15px_rgba(237,203,255,0.6)] transition hover:bg-white active:scale-95"
           >
             {FINAL_CTA.cta.label} <span aria-hidden>→</span>

@@ -50,6 +50,7 @@ export function AmazeCCShowcase() {
           <div className="mt-7 flex flex-wrap gap-3">
             <a
               href={AMAZECC.link.href}
+              data-cursor="Open app"
               className="inline-flex items-center gap-2 rounded-xl bg-mint px-5 py-3 text-sm font-semibold text-ink transition hover:brightness-110 active:scale-95"
             >
               {AMAZECC.link.label} <span aria-hidden>↗</span>
