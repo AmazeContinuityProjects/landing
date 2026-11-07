@@ -25,9 +25,13 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Amaze Continuity Projects | AmazeCC & GoRobo",
+  title: "Amaze Continuity Projects · Software Built for Continuity",
   description:
-    "Students building AmazeCC, the app VIT students run their semester on, and GoRobo, parts for campus makers. Open source, privacy-first, made to be handed down.",
+    "Students building AmazeCC, the app VIT students run their semester on. Open source, privacy-first, made to be handed down.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

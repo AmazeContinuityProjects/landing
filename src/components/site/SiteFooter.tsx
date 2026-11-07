@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ORG } from "../../content/site";
 
@@ -6,7 +7,16 @@ export function SiteFooter() {
     <footer className="relative overflow-hidden border-t border-white/5 bg-ink pt-20">
       <div className="mx-auto grid max-w-6xl gap-12 px-6 sm:grid-cols-[1.4fr_1fr_1fr]">
         <div>
-          <p className="font-display text-xl font-bold uppercase text-white">{ORG.name}</p>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logo.png"
+              alt="Amaze Continuity Projects"
+              width={36}
+              height={36}
+              className="h-9 w-9 rounded-lg border border-white/10 object-cover"
+            />
+            <p className="font-display text-lg font-bold tracking-tight text-white">{ORG.name}</p>
+          </div>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
             Student-built software for {ORG.campus}, made to be handed down. Open source, privacy-first, and not
             affiliated with VIT.
@@ -22,7 +32,11 @@ export function SiteFooter() {
           <p className="font-mono text-xs uppercase tracking-widest text-muted">Projects</p>
           <ul className="mt-4 space-y-2 text-sm">
             <li><a href={ORG.app} className="text-white/70 transition hover:text-white">AmazeCC</a></li>
-            <li><a href={ORG.gorobo} className="text-white/70 transition hover:text-white">GoRobo</a></li>
+            <li>
+              <a href={ORG.gorobo} className="text-white/50 transition hover:text-white text-xs">
+                GoRobo <span className="text-[10px] text-white/40">(assisted initially)</span>
+              </a>
+            </li>
           </ul>
         </div>
         <div>

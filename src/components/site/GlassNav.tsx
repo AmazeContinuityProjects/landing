@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ORG } from "../../content/site";
@@ -7,12 +8,11 @@ import { ORG } from "../../content/site";
 const LINKS = [
   { href: "/#mission", label: "Mission" },
   { href: "/#amazecc", label: "AmazeCC" },
-  { href: "/#gorobo", label: "GoRobo" },
   { href: "/#teams", label: "Teams" },
   { href: "/#journey", label: "Journey" },
 ];
 
-/** The floating glass nav pill. Becomes more opaque once you scroll. */
+/** The floating glass nav pill. Becomes more frosted/opaque once you scroll. */
 export function GlassNav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -28,23 +28,35 @@ export function GlassNav() {
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-5">
       <nav
         aria-label="Main"
-        className={`glass mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-2xl px-3 py-2.5 transition-[background-color,box-shadow] duration-300 sm:px-4 ${
-          scrolled ? "bg-ink/75 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]" : ""
+        className={`nav-frost mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-2xl px-3 py-2 transition-[background-color,border-color,box-shadow] duration-300 sm:px-4 ${
+          scrolled ? "nav-frost-scrolled" : ""
         }`}
       >
-        <Link href="/" className="flex items-center gap-2.5" aria-label={`${ORG.name} home`}>
-          <span className="relative grid h-8 w-8 place-items-center overflow-hidden rounded-lg bg-mist text-ink">
-            <span className="font-display text-[11px] font-black">ACP</span>
-          </span>
-          <span className="hidden font-display text-sm font-bold uppercase tracking-wide text-white sm:inline">
-            Amaze<span className="text-muted">Continuity</span>
-          </span>
+        <Link href="/" className="group flex items-center gap-3 transition hover:opacity-90" aria-label={`${ORG.name} home`}>
+          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-white/15 bg-black/70 shadow-sm transition group-hover:border-white/30 sm:h-9 sm:w-9">
+            <Image
+              src="/logo.png"
+              alt="Amaze Continuity Projects Logo"
+              width={36}
+              height={36}
+              className="h-full w-full object-cover"
+              priority
+            />
+          </div>
+          <div className="flex flex-col leading-tight">
+            <span className="font-display text-sm font-bold tracking-tight text-white">
+              amaze <span className="font-light text-white/70">continuity</span>
+            </span>
+            <span className="hidden font-mono text-[9px] uppercase tracking-wider text-muted sm:block">
+              projects
+            </span>
+          </div>
         </Link>
 
         <ul className="hidden items-center gap-1 md:flex">
           {LINKS.map((l) => (
             <li key={l.href}>
-              <Link href={l.href} className="rounded-lg px-3 py-2 text-sm text-white/70 transition hover:bg-white/5 hover:text-white">
+              <Link href={l.href} className="rounded-lg px-3 py-2 text-sm text-white/75 transition hover:bg-white/10 hover:text-white">
                 {l.label}
               </Link>
             </li>
@@ -83,7 +95,7 @@ export function GlassNav() {
       </nav>
 
       {open ? (
-        <div className="glass mx-auto mt-2 max-w-6xl rounded-2xl bg-ink/90 p-2 md:hidden">
+        <div className="nav-frost-menu mx-auto mt-2 max-w-6xl rounded-2xl p-2 md:hidden">
           {[...LINKS, { href: ORG.github, label: "GitHub" }].map((l) => (
             <a
               key={l.href}

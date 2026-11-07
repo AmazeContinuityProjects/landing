@@ -96,6 +96,40 @@ body::before {
   -webkit-backdrop-filter: blur(18px) saturate(140%);
 }
 
+/* Enhanced frosty glass navigation bar */
+.nav-frost {
+  background: linear-gradient(180deg, rgba(16, 24, 24, 0.72) 0%, rgba(8, 14, 14, 0.62) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top-color: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.4),
+    0 16px 36px -12px rgba(0, 0, 0, 0.45);
+}
+
+.nav-frost-scrolled {
+  background: linear-gradient(180deg, rgba(10, 16, 16, 0.88) 0%, rgba(6, 10, 10, 0.84) 100%);
+  border-color: rgba(255, 255, 255, 0.15);
+  border-top-color: rgba(255, 255, 255, 0.28);
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.5),
+    0 24px 48px -12px rgba(0, 0, 0, 0.75);
+}
+
+.nav-frost-menu {
+  background: rgba(8, 13, 13, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-top-color: rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.18),
+    0 24px 48px -12px rgba(0, 0, 0, 0.75);
+}
+
 /* The holographic band behind the stats. */
 .holo {
   background:

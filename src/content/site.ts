@@ -20,7 +20,7 @@ export const HERO = {
   // Three lines: iridescent, solid, outline.
   lines: ["Software", "that outlives", "its batch"] as const,
   lede:
-    "We're the students behind AmazeCC, the app VIT students run their semester on, and GoRobo, parts for campus makers. We build them in the open and hand them down, so every batch inherits something better.",
+    "We're the student engineering collective behind AmazeCC, the app VIT students run their semester on. We build software in the open and hand it down, so every batch inherits something better.",
   primary: { label: "Explore AmazeCC", href: "#amazecc" },
   secondary: { label: "Join the team", href: "/join" },
 };
@@ -255,8 +255,8 @@ export const JOURNEY = [
   },
   {
     date: "Sep 2026",
-    title: "GoRobo launches",
-    body: "A parts catalogue for campus makers, with 300+ robotics and electronics components.",
+    title: "GoRobo incubation",
+    body: "Helped support the initial launch of GoRobo, an electronics and hardware parts initiative for campus makers.",
   },
   {
     date: "Nov 2026",
