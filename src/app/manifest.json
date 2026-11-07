@@ -1,7 +1,7 @@
 {
   "name": "Amaze Continuity Projects",
   "short_name": "ACP",
-  "description": "Students building AmazeCC, the app VIT students run their semester on.",
+  "description": "The student collective behind AmazeCC, the app VIT students run their semester on.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#060a0a",

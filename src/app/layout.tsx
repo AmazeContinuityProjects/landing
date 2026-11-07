@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   title: "Amaze Continuity Projects · Software Built for Continuity",
   description:
     "Students building AmazeCC, the app VIT students run their semester on. Open source, privacy-first, made to be handed down.",
-  // Icons come from the file conventions in app/: favicon.ico, icon.svg, apple-icon.png, manifest.json.
+  // Icons (the AmazeCC app icon) come from the file conventions in app/: favicon.ico, icon.png, apple-icon.png, manifest.json.
 };
 
 export const viewport: Viewport = {
