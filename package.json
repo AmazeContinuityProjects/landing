@@ -4,9 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "preview": "npm run build && wrangler pages dev out",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "CLOUDFLARE_ACCOUNT_ID=5abd6d7c8175ba56c3058e34db158aa8 wrangler d1 migrations apply DB --remote",
+    "deploy": "node scripts/configure-cloudflare.mjs && npm test && npm run typecheck && npm run build && npm run db:migrate:remote && CLOUDFLARE_ACCOUNT_ID=5abd6d7c8175ba56c3058e34db158aa8 wrangler pages deploy out --project-name acp-landing --branch main"
   },
   "dependencies": {
     "@amazecontinuityprojects/amazeui": "^1.1.0",
@@ -17,6 +23,7 @@
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261107.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -24,6 +31,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "wrangler": "^4.158.0"
   }
 }
