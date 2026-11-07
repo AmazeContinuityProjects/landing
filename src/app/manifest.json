@@ -1,0 +1,14 @@
+{
+  "name": "Amaze Continuity Projects",
+  "short_name": "ACP",
+  "description": "The student collective behind AmazeCC, the app VIT students run their semester on.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060a0a",
+  "theme_color": "#060a0a",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
