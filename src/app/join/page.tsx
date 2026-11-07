@@ -15,7 +15,7 @@ const STEPS = [
 
 export default function JoinPage() {
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 pb-24 pt-20">
+    <div className="mx-auto w-full max-w-3xl px-6 pb-24 pt-36">
       <header className="text-center">
         <p className="text-sm font-semibold uppercase tracking-widest text-[#8B80FF]">Recruitments</p>
         <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">Join AmazeCC</h1>
