@@ -4,14 +4,14 @@ import { JoinForm } from "../../components/join/JoinForm";
 export const metadata: Metadata = {
   title: "Join Amaze Continuity Projects · Recruitments",
   description:
-    "Join the student engineering collective behind AmazeCC. Ship software for thousands of students at VIT Chennai that outlives its batch.",
+    "Join the engineering collective behind AmazeCC. Applications are open to students, professionals, and independent builders everywhere.",
 };
 
 const PILLARS = [
   {
     category: "Scale",
     title: "Real Campus Scale",
-    desc: "Production deployments serving thousands of VIT students daily across attendance, timetable synthesis, and registration surges.",
+    desc: "Production deployments serving thousands of daily active users across attendance, timetable synthesis, and peak traffic surges.",
     icon: (
       <svg className="h-5 w-5 text-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
         <circle cx="12" cy="12" r="3" />
@@ -169,8 +169,7 @@ export default function JoinPage() {
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
             Amaze Continuity Projects is the independent student engineering collective behind{" "}
-            <span className="text-white font-semibold">AmazeCC</span>. We engineer high-traffic, privacy-first software
-            for VIT Chennai and hand it down across batches.
+            <span className="text-white font-semibold">AmazeCC</span>. We build software in the open that outlives its creators — applications are open to passionate engineers and designers everywhere.
           </p>
         </header>
 
@@ -270,7 +269,7 @@ export default function JoinPage() {
         <footer className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row">
           <div className="flex items-center gap-2 text-xs text-white/60">
             <span className="h-1.5 w-1.5 rounded-full bg-mint" />
-            <span>Amaze Continuity Projects · VIT Chennai</span>
+            <span>Amaze Continuity Projects · Open Source Initiative</span>
           </div>
           <div className="text-xs text-white/60">
             Questions? Inquire via{" "}

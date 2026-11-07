@@ -25,11 +25,13 @@ function FieldError({ message }: { message?: string }) {
 }
 
 const YEARS = [
-  { value: 1, label: "1st Year (Fresher)" },
-  { value: 2, label: "2nd Year" },
-  { value: 3, label: "3rd Year" },
-  { value: 4, label: "4th Year" },
-  { value: 5, label: "5th Year (Integrated)" },
+  { value: "1", label: "1st Year (Fresher)" },
+  { value: "2", label: "2nd Year" },
+  { value: "3", label: "3rd Year" },
+  { value: "4", label: "4th Year" },
+  { value: "5", label: "5th Year / Dual Degree" },
+  { value: "grad", label: "Graduate / Working Professional" },
+  { value: "other", label: "Self-taught / Independent Builder" },
 ];
 
 export function JoinForm() {
@@ -82,15 +84,23 @@ export function JoinForm() {
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (submitting) return;
-    setSubmitting(true);
-    setMessage(null);
+
     setFieldErrors({});
+    setMessage(null);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim() || !emailRegex.test(email.trim())) {
+      setFieldErrors({ email: "Please enter a valid email address." });
+      return;
+    }
+
+    setSubmitting(true);
 
     const result = await submitApplication({
       name,
-      email,
-      regNo,
-      year: Number(year),
+      email: email.trim(),
+      regNo: regNo.trim() || undefined,
+      year,
       roles,
       otherRole: roles.includes("other") ? otherRole : undefined,
       why,
@@ -193,7 +203,7 @@ export function JoinForm() {
           Thank you for applying
         </h2>
         <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-white/70">
-          Your application has been received by the maintainers. If your background aligns with our active roadmap, we will reach out to your student email address (<span className="text-white font-medium">{email || "provided email"}</span>).
+          Your application has been received by the maintainers. If your background aligns with our active roadmap, we will reach out to your email address (<span className="text-white font-medium">{email || "provided email"}</span>).
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
@@ -263,7 +273,7 @@ export function JoinForm() {
 
             <div>
               <label htmlFor="email" className={labelCls}>
-                Official student email <span className="text-mint">*</span>
+                Email address <span className="text-mint">*</span>
               </label>
               <input
                 id="email"
@@ -271,7 +281,7 @@ export function JoinForm() {
                 className={cn(inputCls, "mt-1.5")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="firstname.lastname2024@vitstudent.ac.in"
+                placeholder="you@domain.com"
                 autoComplete="email"
                 required
               />
@@ -280,23 +290,23 @@ export function JoinForm() {
 
             <div>
               <label htmlFor="regNo" className={labelCls}>
-                Registration number <span className="text-mint">*</span>
+                College / organization / registration number <span className="font-normal text-white/40">(optional)</span>
               </label>
               <input
                 id="regNo"
-                className={cn(inputCls, "mt-1.5 uppercase font-mono tracking-wider")}
+                className={cn(inputCls, "mt-1.5 font-mono tracking-wider")}
                 value={regNo}
-                onChange={(e) => setRegNo(e.target.value.toUpperCase())}
-                placeholder="24BCE1001"
+                onChange={(e) => setRegNo(e.target.value)}
+                placeholder="Your college, organization or registration number"
                 autoComplete="off"
-                required
+                maxLength={200}
               />
               <FieldError message={fieldErrors.regNo} />
             </div>
 
             <div>
               <label htmlFor="year" className={labelCls}>
-                Year of study <span className="text-mint">*</span>
+                Background or Year <span className="text-mint">*</span>
               </label>
               <div className="relative mt-1.5">
                 <select
@@ -307,7 +317,7 @@ export function JoinForm() {
                   required
                 >
                   <option value="" disabled className="bg-ink-2 text-white/50">
-                    Select your current year…
+                    Select your background / year…
                   </option>
                   {YEARS.map((y) => (
                     <option key={y.value} value={y.value} className="bg-ink-2 text-white">
@@ -423,7 +433,7 @@ export function JoinForm() {
           ) : null}
         </div>
 
-        {/* Section 3: Technical Motivation */}
+        {/* Section 3: Motivation */}
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b border-white/10 pb-2">
             <div className="flex items-center gap-2">
@@ -448,7 +458,7 @@ export function JoinForm() {
               value={why}
               onChange={(e) => setWhy(e.target.value)}
               maxLength={limits.whyMax}
-              placeholder="Tell us what problems with campus tools you'd like to fix, what you hope to build, or what software continuity means to you."
+              placeholder="Tell us what excites you about building high-impact tools, what projects you would like to work on, or what software continuity means to you."
               required
             />
             <div className="mt-2 flex items-center justify-between gap-3 text-xs">
@@ -585,7 +595,7 @@ export function JoinForm() {
 
           <div className="flex items-center justify-between text-xs text-white/40">
             <span>Amaze Continuity Projects</span>
-            <span>VIT Chennai · Not affiliated with VIT</span>
+            <span>Independent Open Initiative</span>
           </div>
         </div>
       </form>

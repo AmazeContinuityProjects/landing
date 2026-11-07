@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "acp-landing",
+  "compatibility_date": "2026-11-01",
+  "pages_build_output_dir": "out",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "acp-recruitment",
+      "database_id": "4423775c-3498-4b5a-a9ea-8c38eb82e354",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
