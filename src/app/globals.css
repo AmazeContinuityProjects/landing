@@ -139,6 +139,15 @@ body::before {
     #f4f1fa;
 }
 
+/* Backplate for flagship cards: a softer holographic wash a glass panel floats on. */
+.holo-plate {
+  background:
+    radial-gradient(90% 120% at 0% 0%, rgb(157 245 180 / 0.55), transparent 60%),
+    radial-gradient(90% 120% at 100% 100%, rgb(60 76 255 / 0.55), transparent 60%),
+    radial-gradient(70% 90% at 60% 30%, rgb(237 203 255 / 0.65), transparent 70%),
+    #20203a;
+}
+
 /* Ribbed glass, like light through a fluted pane. */
 .ribbed {
   background-image: repeating-linear-gradient(

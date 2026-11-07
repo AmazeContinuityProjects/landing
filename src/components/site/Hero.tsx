@@ -40,7 +40,7 @@ export function Hero() {
             <span className="mr-2 inline-block h-2 w-2 rounded-full bg-mint align-middle animate-pulse-dot" />
             {HERO.eyebrow}
           </p>
-          <h1 className="font-display mt-6 text-[13vw] font-black uppercase leading-[0.86] sm:text-[10vw] lg:text-[6.4rem]">
+          <h1 className="font-display mt-6 text-[11.2vw] font-black uppercase leading-[0.86] sm:text-[10vw] lg:text-[6.4rem]">
             <span className="animate-rise text-iridescent block" style={{ animationDelay: "150ms" }}>
               {l1}
             </span>
@@ -58,14 +58,14 @@ export function Hero() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href={HERO.primary.href}
-              className="group inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-mint px-5 py-3 text-sm font-semibold text-ink transition hover:brightness-110 active:scale-95"
+              className="group inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-mint px-4 py-3 text-sm font-semibold text-ink transition hover:brightness-110 active:scale-95"
             >
               {HERO.primary.label}
               <span aria-hidden className="transition group-hover:translate-x-0.5">↓</span>
             </Link>
             <Link
               href={HERO.secondary.href}
-              className="inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-mist active:scale-95"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl border border-white/20 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-ink active:scale-95"
             >
               {HERO.secondary.label}
             </Link>

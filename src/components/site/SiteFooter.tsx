@@ -7,16 +7,7 @@ export function SiteFooter() {
     <footer className="relative overflow-hidden border-t border-white/5 bg-ink pt-20">
       <div className="mx-auto grid max-w-6xl gap-12 px-6 sm:grid-cols-[1.4fr_1fr_1fr]">
         <div>
-          <div className="flex items-center gap-3">
-            <Image
-              src="/logo.png"
-              alt="Amaze Continuity Projects"
-              width={36}
-              height={36}
-              className="h-9 w-9 rounded-lg border border-white/10 object-cover"
-            />
-            <p className="font-display text-lg font-bold tracking-tight text-white">{ORG.name}</p>
-          </div>
+          <Image src="/logo-mark.png" alt="amaze continuity projects" width={412} height={250} className="h-16 w-auto" />
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
             Student-built software for {ORG.campus}, made to be handed down. Open source, privacy-first, and not
             affiliated with VIT.

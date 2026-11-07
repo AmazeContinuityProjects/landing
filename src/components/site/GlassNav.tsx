@@ -33,24 +33,16 @@ export function GlassNav() {
         }`}
       >
         <Link href="/" className="group flex items-center gap-3 transition hover:opacity-90" aria-label={`${ORG.name} home`}>
-          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-white/15 bg-black/70 shadow-sm transition group-hover:border-white/30 sm:h-9 sm:w-9">
-            <Image
-              src="/logo.png"
-              alt="Amaze Continuity Projects Logo"
-              width={36}
-              height={36}
-              className="h-full w-full object-cover"
-              priority
-            />
-          </div>
-          <div className="flex flex-col leading-tight">
-            <span className="font-display text-sm font-bold tracking-tight text-white">
-              amaze <span className="font-light text-white/70">continuity</span>
-            </span>
-            <span className="hidden font-mono text-[9px] uppercase tracking-wider text-muted sm:block">
-              projects
-            </span>
-          </div>
+          {/* The cropped lockup (white on transparent): legible at nav size, unlike
+              the padded square icon, and it already is the wordmark. */}
+          <Image
+            src="/logo-mark.png"
+            alt="amaze continuity projects"
+            width={412}
+            height={250}
+            className="h-9 w-auto sm:h-10"
+            priority
+          />
         </Link>
 
         <ul className="hidden items-center gap-1 md:flex">
