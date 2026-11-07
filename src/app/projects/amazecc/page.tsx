@@ -73,7 +73,7 @@ export default function AmazeCCDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0D14] pb-24 text-slate-200">
+    <div className="min-h-screen bg-[#0A0D14] pb-24 pt-24 text-slate-200">
       
       {/* Navigation Header */}
       <div className="border-b border-white/5 bg-black/20 py-4">
