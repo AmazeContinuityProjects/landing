@@ -254,6 +254,21 @@ body::before {
 .cursor-head[data-hover="true"] {
   filter: drop-shadow(0 0 10px rgb(157 245 180 / 0.6));
 }
+/* Selection frame around the hovered element, like a selected layer. */
+.cursor-frame {
+  border: 1.5px solid var(--volt);
+  box-shadow:
+    0 0 0 1px rgb(60 76 255 / 0.18),
+    0 0 28px -4px rgb(60 76 255 / 0.55);
+}
+/* Click ripple. */
+@keyframes cursor-ripple {
+  from { opacity: 0.9; transform: translate(-50%, -50%) scale(0.2); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+}
+.cursor-ripple-run {
+  animation: cursor-ripple 0.5s cubic-bezier(0.2, 0.7, 0.1, 1) forwards;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

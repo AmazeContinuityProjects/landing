@@ -2,9 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const TRAIL = 4;
+/** Ghost arrows in the motion trail. */
+const GHOSTS = 4;
+/** How far back in time each successive ghost sits, in ms. */
+const GHOST_SPACING_MS = 26;
+/** Skip the selection frame on elements bigger than this (full-width blocks). */
+const MAX_FRAME = { w: 640, h: 320 };
+/** Breathing room between an element and its selection frame, in px. */
+const FRAME_PAD = 6;
 
-/** The arrow, as in the hero fragment: electric blue with a white edge. */
+const INTERACTIVE = "a, button, [role='button'], label, summary, [data-cursor]";
+const TYPING = "input, textarea, [contenteditable='true'], iframe";
+
+/** The arrow, as in the hero fragment: electric blue with a white edge. Tip at (3, 2). */
 function Arrow({ ghost = false }: { ghost?: boolean }) {
   return (
     <svg width="22" height="22" viewBox="0 0 16 16" aria-hidden>
@@ -19,22 +29,44 @@ function Arrow({ ghost = false }: { ghost?: boolean }) {
   );
 }
 
+type Sample = { x: number; y: number; t: number };
+
+/** Where the pointer was `ago` ms before the newest sample, interpolated. */
+function sampleAt(history: Sample[], ago: number): Sample {
+  const newest = history[history.length - 1];
+  const when = newest.t - ago;
+  for (let i = history.length - 1; i > 0; i--) {
+    const a = history[i - 1];
+    const b = history[i];
+    if (a.t <= when) {
+      const k = b.t === a.t ? 0 : (when - a.t) / (b.t - a.t);
+      return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k, t: when };
+    }
+  }
+  return history[0];
+}
+
 /**
- * A custom cursor: an arrow trailing ghost arrows, like a multiplayer cursor in
- * a design tool.
+ * A design-tool cursor.
  *
- * - Only for fine pointers (mouse and trackpad) and when motion is allowed;
- *   touch devices and reduced-motion users keep the system cursor.
- * - Grows and turns mint over links and buttons. Elements with
- *   `data-cursor="Label"` show that label in a pill beside it.
- * - Text fields get the normal text cursor back.
- * - Driven by refs and one rAF loop, so moving the mouse never re-renders React.
+ * - The arrow tip sits exactly on the pointer every frame (no easing lag).
+ * - A trail of ghost arrows replays the pointer's recent path, spaced in time
+ *   rather than per frame, so it looks the same at 60 and 120 Hz and vanishes
+ *   when the pointer rests.
+ * - Hovering a link or button snaps a selection frame with corner handles
+ *   around it, like selecting a layer in Figma. `data-cursor="Label"` names
+ *   the layer. The frame glides between elements and tracks them on scroll.
+ * - A click leaves a ripple. Text fields and iframes get the system cursor.
+ * - Only for fine pointers with motion allowed; driven by refs and one rAF
+ *   loop, so moving the mouse never re-renders React.
  */
 export function CustomCursor() {
   const [enabled, setEnabled] = useState(false);
   const root = useRef<HTMLDivElement | null>(null);
   const head = useRef<HTMLDivElement | null>(null);
-  const label = useRef<HTMLSpanElement | null>(null);
+  const frame = useRef<HTMLDivElement | null>(null);
+  const tag = useRef<HTMLSpanElement | null>(null);
+  const ripple = useRef<HTMLSpanElement | null>(null);
   const ghosts = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -54,70 +86,130 @@ export function CustomCursor() {
     if (!enabled) return;
     document.documentElement.classList.add("has-custom-cursor");
 
-    const target = { x: -100, y: -100 };
-    const points = Array.from({ length: TRAIL + 1 }, () => ({ x: -100, y: -100 }));
-    let visible = false;
-    let hovering = false;
+    const pointer = { x: -100, y: -100 };
+    const history: Sample[] = [{ x: -100, y: -100, t: performance.now() }];
+    // The frame's drawn rect eases toward the hovered element's live rect.
+    const box = { x: 0, y: 0, w: 0, h: 0, a: 0 };
+    let hovered: HTMLElement | null = null;
+    let shown = false;
     let pressed = false;
+    let last = performance.now();
     let raf = 0;
 
-    const setVisible = (v: boolean) => {
-      visible = v;
+    const show = (v: boolean) => {
+      if (shown === v) return;
+      shown = v;
       if (root.current) root.current.style.opacity = v ? "1" : "0";
     };
 
     const onMove = (e: PointerEvent) => {
-      target.x = e.clientX;
-      target.y = e.clientY;
-      if (!visible) {
-        points.forEach((p) => ((p.x = e.clientX), (p.y = e.clientY)));
-        setVisible(true);
+      if (e.pointerType === "touch") return;
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+      if (!shown) {
+        // Arriving: start the trail where the pointer is, so it doesn't streak in from a corner.
+        history.length = 0;
+        history.push({ x: pointer.x, y: pointer.y, t: performance.now() });
       }
-      const el = e.target instanceof Element ? e.target : null;
-      const typing = el?.closest("input, textarea, select, [contenteditable='true']");
-      if (typing) {
-        setVisible(false);
+      updateHover(e.target instanceof Element ? e.target : null);
+    };
+
+    // Shared by pointer moves and scrolls: a scroll moves the page under a still pointer.
+    const updateHover = (el: Element | null) => {
+      if (el?.closest(TYPING)) {
+        show(false);
+        hovered = null;
         return;
       }
-      const interactive = el?.closest<HTMLElement>("a, button, [role='button'], label, summary, [data-cursor]");
-      hovering = Boolean(interactive);
-      const text = interactive?.dataset.cursor ?? "";
-      if (label.current) {
-        label.current.textContent = text;
-        label.current.style.opacity = text ? "1" : "0";
-        label.current.style.transform = text ? "translate(18px, 14px) scale(1)" : "translate(18px, 14px) scale(0.6)";
+      show(true);
+      const next = el?.closest<HTMLElement>(INTERACTIVE) ?? null;
+      if (next !== hovered) {
+        if (!hovered && next) {
+          // Snap the frame onto the first element instead of growing from 0×0.
+          const r = next.getBoundingClientRect();
+          Object.assign(box, { x: r.left - FRAME_PAD, y: r.top - FRAME_PAD, w: r.width + FRAME_PAD * 2, h: r.height + FRAME_PAD * 2 });
+        }
+        hovered = next;
+        const label = next?.dataset.cursor ?? "";
+        if (tag.current) {
+          tag.current.textContent = label;
+          tag.current.style.display = label ? "block" : "none";
+        }
+        head.current?.setAttribute("data-hover", next ? "true" : "false");
       }
-      if (head.current) head.current.dataset.hover = hovering ? "true" : "false";
     };
-    const onDown = () => (pressed = true);
-    const onUp = () => (pressed = false);
-    const onLeave = () => setVisible(false);
 
-    const tick = () => {
-      // The head eases quickly toward the mouse; each ghost follows the one before it.
-      points[0].x += (target.x - points[0].x) * 0.55;
-      points[0].y += (target.y - points[0].y) * 0.55;
-      for (let i = 1; i < points.length; i++) {
-        points[i].x += (points[i - 1].x - points[i].x) * 0.32;
-        points[i].y += (points[i - 1].y - points[i].y) * 0.32;
+    const onScroll = () => {
+      if (shown) updateHover(document.elementFromPoint(pointer.x, pointer.y));
+    };
+
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType === "touch") return;
+      pressed = true;
+      const r = ripple.current;
+      if (r) {
+        r.style.left = `${e.clientX}px`;
+        r.style.top = `${e.clientY}px`;
+        // Restart the CSS animation on every click.
+        r.classList.remove("cursor-ripple-run");
+        void r.offsetWidth;
+        r.classList.add("cursor-ripple-run");
       }
-      const scale = pressed ? 0.82 : hovering ? 1.25 : 1;
-      if (head.current) head.current.style.transform = `translate3d(${points[0].x}px, ${points[0].y}px, 0) scale(${scale})`;
+    };
+    const onUp = () => (pressed = false);
+    const onLeave = () => {
+      show(false);
+      hovered = null;
+    };
+
+    const tick = (now: number) => {
+      const dt = Math.min(64, now - last);
+      last = now;
+
+      // History for the trail: keep ~200 ms of samples.
+      history.push({ x: pointer.x, y: pointer.y, t: now });
+      while (history.length > 2 && now - history[0].t > GHOST_SPACING_MS * (GHOSTS + 2)) history.shift();
+
+      const scale = pressed ? 0.82 : hovered ? 1.15 : 1;
+      if (head.current) head.current.style.transform = `translate3d(${pointer.x}px, ${pointer.y}px, 0) scale(${scale})`;
+
       ghosts.current.forEach((g, i) => {
         if (!g) return;
-        const p = points[i + 1];
-        // Ghosts only show while moving, so a resting cursor is one clean arrow.
-        const spread = Math.hypot(points[0].x - p.x, points[0].y - p.y);
+        const p = sampleAt(history, (i + 1) * GHOST_SPACING_MS);
+        const dist = Math.hypot(pointer.x - p.x, pointer.y - p.y);
         g.style.transform = `translate3d(${p.x}px, ${p.y}px, 0)`;
-        g.style.opacity = String(Math.min(1, spread / 24) * (0.55 - i * 0.12));
+        // Ghosts appear with speed and stay clear of the arrow itself.
+        g.style.opacity = String(Math.min(1, Math.max(0, (dist - 8) / 30)) * (0.6 - i * 0.12));
       });
+
+      // Selection frame: ease toward the hovered element's live rect (tracks scrolling and layout).
+      const f = frame.current;
+      if (f) {
+        const r = hovered?.getBoundingClientRect();
+        const fits = r && r.width <= MAX_FRAME.w && r.height <= MAX_FRAME.h && r.width > 0;
+        const k = 1 - Math.exp(-dt / 70);
+        if (r && fits) {
+          box.x += (r.left - FRAME_PAD - box.x) * k;
+          box.y += (r.top - FRAME_PAD - box.y) * k;
+          box.w += (r.width + FRAME_PAD * 2 - box.w) * k;
+          box.h += (r.height + FRAME_PAD * 2 - box.h) * k;
+        }
+        box.a += ((fits ? 1 : 0) - box.a) * (1 - Math.exp(-dt / 90));
+        f.style.transform = `translate3d(${box.x}px, ${box.y}px, 0)`;
+        f.style.width = `${box.w}px`;
+        f.style.height = `${box.h}px`;
+        f.style.opacity = String(box.a);
+      }
+
       raf = requestAnimationFrame(tick);
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
-    window.addEventListener("pointerdown", onDown);
-    window.addEventListener("pointerup", onUp);
-    document.addEventListener("pointerleave", onLeave);
+    window.addEventListener("pointerdown", onDown, { passive: true });
+    window.addEventListener("pointerup", onUp, { passive: true });
+    document.documentElement.addEventListener("pointerleave", onLeave);
+    window.addEventListener("blur", onLeave);
+    window.addEventListener("scroll", onScroll, { passive: true, capture: true });
     raf = requestAnimationFrame(tick);
 
     return () => {
@@ -125,7 +217,9 @@ export function CustomCursor() {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointerup", onUp);
-      document.removeEventListener("pointerleave", onLeave);
+      document.documentElement.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("blur", onLeave);
+      window.removeEventListener("scroll", onScroll, { capture: true });
       cancelAnimationFrame(raf);
     };
   }, [enabled]);
@@ -134,7 +228,18 @@ export function CustomCursor() {
 
   return (
     <div ref={root} aria-hidden className="pointer-events-none fixed inset-0 z-[80] opacity-0 transition-opacity duration-200">
-      {Array.from({ length: TRAIL }, (_, i) => (
+      {/* Selection frame with corner handles and a layer-name tag */}
+      <div ref={frame} className="cursor-frame absolute left-0 top-0 rounded-[10px] will-change-transform" style={{ opacity: 0 }}>
+        {["-left-1 -top-1", "-right-1 -top-1", "-left-1 -bottom-1", "-right-1 -bottom-1"].map((pos) => (
+          <span key={pos} className={`absolute ${pos} h-2 w-2 rounded-[2px] border border-[var(--volt)] bg-white`} />
+        ))}
+        <span
+          ref={tag}
+          className="absolute -top-6 left-0 hidden whitespace-nowrap rounded-md bg-[var(--volt)] px-1.5 py-0.5 font-mono text-[10px] font-semibold text-white shadow-lg"
+        />
+      </div>
+
+      {Array.from({ length: GHOSTS }, (_, i) => (
         <div
           key={i}
           ref={(el) => {
@@ -146,13 +251,12 @@ export function CustomCursor() {
           <Arrow ghost />
         </div>
       ))}
-      <div ref={head} data-hover="false" className="cursor-head absolute left-0 top-0 -ml-[3px] -mt-[2px] will-change-transform">
+
+      <span ref={ripple} className="cursor-ripple absolute h-10 w-10 rounded-full border-2 border-[var(--mint)] opacity-0" />
+
+      {/* The head: translate puts the arrow tip (3px, 2px into the SVG) on the pointer. */}
+      <div ref={head} data-hover="false" className="cursor-head absolute left-0 top-0 -ml-[3px] -mt-[2px] origin-[3px_2px] will-change-transform">
         <Arrow />
-        <span
-          ref={label}
-          className="absolute left-0 top-0 whitespace-nowrap rounded-full bg-[var(--volt)] px-2.5 py-1 text-[11px] font-semibold text-white opacity-0 shadow-lg transition-[opacity,transform] duration-200"
-          style={{ transform: "translate(18px, 14px) scale(0.6)", transformOrigin: "top left" }}
-        />
       </div>
     </div>
   );

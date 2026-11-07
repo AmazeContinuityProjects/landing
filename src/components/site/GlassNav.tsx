@@ -66,6 +66,7 @@ export function GlassNav() {
           </a>
           <Link
             href="/join"
+            data-cursor="Apply"
             className="rounded-xl bg-mist px-4 py-2 text-sm font-semibold text-ink transition hover:bg-white active:scale-95"
           >
             Join us
