@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HERO } from "../../content/site";
 import { Ribbon } from "./Ribbon";
+import { CollaboratorCursors } from "./CollaboratorCursors";
 
 const RIBBON =
   "M -60 520 C 120 470, 220 600, 380 560 S 560 380, 700 470 S 820 690, 980 610 S 1180 300, 1320 360 S 1480 520, 1560 470";
@@ -81,7 +82,7 @@ export function Hero() {
         <div aria-hidden className="ribbed absolute right-[6%] top-[12%] hidden h-[78%] w-[26%] rounded-sm opacity-70 md:block" />
 
         {/* An editor window behind the ribbon, as if the page were being designed live. */}
-        <div aria-hidden className="absolute left-[4%] top-[22%] hidden h-[70%] w-[42%] rounded-xl border border-white/10 bg-white/[0.015] md:block">
+        <div aria-hidden data-collab-target className="absolute left-[4%] top-[22%] hidden h-[70%] w-[42%] rounded-xl border border-white/10 bg-white/[0.015] md:block">
           <div className="flex items-center gap-1.5 border-b border-white/10 px-3 py-2">
             <span className="h-2 w-2 rounded-full bg-[var(--volt)]" />
             <span className="h-2 w-2 rounded-full bg-lilac" />
@@ -107,7 +108,7 @@ export function Hero() {
         </div>
 
         {/* A glossy torus floating beside the fluted pane. */}
-        <div aria-hidden className="animate-float absolute right-[31%] top-[30%] hidden lg:block" style={{ animationDelay: "-3s", "--r": "-12deg" } as React.CSSProperties}>
+        <div aria-hidden data-collab-target className="animate-float absolute right-[31%] top-[30%] hidden lg:block" style={{ animationDelay: "-3s", "--r": "-12deg" } as React.CSSProperties}>
           <svg width="150" height="150" viewBox="0 0 150 150">
             <defs>
               <radialGradient id="torus-shade" cx="35%" cy="30%" r="80%">
@@ -142,7 +143,7 @@ export function Hero() {
         />
 
         {/* Attendance fragment */}
-        <div className="animate-float absolute left-[6%] top-[8%] w-56 rounded-2xl bg-white p-4 text-ink shadow-2xl sm:left-[14%] sm:w-64" style={{ "--r": "-4deg" } as React.CSSProperties}>
+        <div data-collab-target className="animate-float absolute left-[6%] top-[8%] w-56 rounded-2xl bg-white p-4 text-ink shadow-2xl sm:left-[14%] sm:w-64" style={{ "--r": "-4deg" } as React.CSSProperties}>
           <p className="font-mono text-[10px] uppercase tracking-widest text-ink/50">Attendance · BACSE203</p>
           <div className="mt-2 flex items-end justify-between">
             <span className="font-display text-4xl font-black">82%</span>
@@ -154,7 +155,7 @@ export function Hero() {
         </div>
 
         {/* Find classmates fragment */}
-        <div className="animate-float glass absolute right-[5%] top-[2%] hidden w-64 rounded-2xl p-4 sm:block" style={{ animationDelay: "-2s", "--r": "3deg" } as React.CSSProperties}>
+        <div data-collab-target className="animate-float glass absolute right-[5%] top-[2%] hidden w-64 rounded-2xl p-4 sm:block" style={{ animationDelay: "-2s", "--r": "3deg" } as React.CSSProperties}>
           <p className="font-mono text-[10px] uppercase tracking-widest text-white/50">Find classmates</p>
           <p className="mt-1 text-sm font-semibold text-white">BAMAT207 · Probability</p>
           <div className="mt-3 flex -space-x-2">
@@ -168,7 +169,7 @@ export function Hero() {
         </div>
 
         {/* Shipped comment with cursor trail */}
-        <div className="absolute bottom-[10%] left-[30%] hidden md:block">
+        <div data-collab-target className="absolute bottom-[10%] left-[30%] hidden md:block">
           <CursorTrail />
           <div className="animate-float mt-2 w-64 rounded-2xl bg-white p-4 text-ink shadow-2xl" style={{ animationDelay: "-4s" }}>
             <div className="flex items-center gap-2">
@@ -180,9 +181,11 @@ export function Hero() {
         </div>
 
         {/* FFCS slot chip */}
-        <div className="animate-float absolute bottom-[14%] right-[12%] rounded-xl border border-white/15 bg-ink-2/80 px-3 py-2 font-mono text-xs text-white shadow-xl backdrop-blur" style={{ animationDelay: "-1s" }}>
+        <div data-collab-target className="animate-float absolute bottom-[14%] right-[12%] rounded-xl border border-white/15 bg-ink-2/80 px-3 py-2 font-mono text-xs text-white shadow-xl backdrop-blur" style={{ animationDelay: "-1s" }}>
           <span className="text-mint">●</span> FFCS · A1+TA1 · no clash
         </div>
+        {/* Teammate cursors, living inside the illustration (not over the page). */}
+        <CollaboratorCursors />
       </div>
     </section>
   );
