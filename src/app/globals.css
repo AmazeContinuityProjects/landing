@@ -120,7 +120,8 @@ body::before {
 }
 
 .nav-frost-menu {
-  background: rgba(8, 13, 13, 0.92);
+  /* Nearly opaque: the hero's giant headline must not show through the links. */
+  background: rgba(7, 11, 11, 0.98);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-top-color: rgba(255, 255, 255, 0.24);
   backdrop-filter: blur(28px) saturate(190%);
