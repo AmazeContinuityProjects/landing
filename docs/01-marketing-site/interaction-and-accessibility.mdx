@@ -1,0 +1,61 @@
+---
+title: "Interaction and accessibility"
+description: "Understand navigation controls, skip links, semantic page structure, reduced-motion support, scroll observation, and pointer effects."
+---
+
+## Keyboard access and page structure
+
+`src/app/layout.tsx` puts a “Skip to content” link before the navigation. It is
+visually hidden until keyboard focus reaches it, then targets `<main id="main">`.
+This lets keyboard users bypass repeated navigation. The page uses landmarks
+such as `<nav>`, `<main>`, `<footer>`, headings, lists, and buttons/links for
+their actual actions.
+
+`GlassNav.tsx` creates navigation links and a mobile menu. A link navigates to
+a URL/anchor; a button changes interface state. Keep those HTML roles correct
+when editing interactions. Focus styling is provided through the `FOCUS`
+class helper and Tailwind focus-visible utilities.
+
+## Scroll reveal and number animation
+
+`Reveal.tsx` uses `IntersectionObserver` to detect when an element enters the
+viewport. It updates `data-visible`; CSS in `globals.css` transitions opacity
+and position. The observer disconnects after the first reveal and is cleaned
+up when the component unmounts. `CountUp` uses `requestAnimationFrame` and
+updates the number over time. It leaves the final number visible when reduced
+motion is requested or the observer is unavailable.
+
+## Pointer experiences
+
+`CustomCursor` checks `(pointer: fine)` and
+`(prefers-reduced-motion: reduce)`. It only hides the default cursor and
+starts its animation loop when the device has a fine pointer and motion is
+allowed. It uses refs and direct style updates to avoid a React render for
+every mouse sample. Inputs and text-editing surfaces retain the system cursor.
+
+`CollaboratorCursors` draws decorative moving avatars in the hero on wide
+screens. It pauses its animation loop while its stage is outside the viewport.
+Both custom cursor systems use animation-frame cleanup; preserve that cleanup
+when changing their effects.
+
+## Reduced motion
+
+`src/app/globals.css` has a `prefers-reduced-motion: reduce` media query that
+shortens or disables CSS animation. The cursor enables itself only when the
+preference allows motion; count-up leaves a final value. When adding animation,
+honor both the CSS preference and any JavaScript-driven loop.
+
+## Accessibility review points
+
+- Keep visible focus indicators on nav and form controls.
+- Give icon-only controls an accessible name.
+- Mark purely decorative SVGs `aria-hidden` so they do not pollute the screen
+  reader output.
+- Use `role="alert"` for field errors that should be announced.
+- Do not make a required action depend only on hover or pointer movement.
+- Respect reduced motion and stop `requestAnimationFrame` loops on cleanup.
+
+## Read next
+
+- [Shared components and styling](/04-code-tour/shared-components-and-styling)
+- [Reveal and cursor code tour](/04-code-tour/reveal-and-cursor-effects)

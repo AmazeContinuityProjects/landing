@@ -1,0 +1,59 @@
+---
+title: "Tests for the recruitment flow"
+description: "Read the Node test suite, its fake D1 binding, server cases, client fetch stubs, and the checks used by the Cloudflare deployment workflow."
+---
+
+**Source:** `tests/recruitment.test.ts`.
+
+The tests use Node's built-in `node:test` and `node:assert/strict` modules.
+`package.json` runs them with `node --import tsx --test tests/*.test.ts`; `tsx`
+lets Node execute the TypeScript test file.
+
+## Fake D1 database
+
+The `database(mode)` helper returns a fake object with the D1 method chain used
+by production code: `prepare(sql)`, `bind(...values)`, then `run()`. It can
+simulate success, a thrown storage error, or `{ success: false }`. It records
+bound values so tests can assert normalization and optional null values without
+connecting to Cloudflare.
+
+`as unknown as Env["DB"]` is a test-only type assertion. It tells TypeScript the
+small fake has the D1 shape; it does not make the fake a real database.
+
+## Covered cases
+
+- GET configuration allows any email domain because `emailDomains` is empty.
+- A general email and missing registration number can be persisted.
+- Optional background/organization text is accepted and email is normalized.
+- Invalid values return `400` before D1 is called.
+- Duplicate roles, unsupported role IDs, field length limits, and numeric
+  bounds are rejected.
+- Missing or failing storage returns `503` without success.
+- Malformed JSON, primitive/array bodies, wrong content type, mismatched
+  origin, and oversized payloads are rejected.
+- The honeypot returns generic success without a write.
+- Client network, non-JSON, and API failures never produce false success.
+
+## Mocking browser fetch
+
+The client test saves `globalThis.fetch`, replaces it with one async stub at a
+time, and restores the original in `finally`. The mocks return a JSON error,
+HTML error, rejected Promise, and successful JSON response. The `finally` block
+is essential: without it, one test could leak a mocked fetch into another.
+
+## Useful commands
+
+```bash
+npm test
+npm run typecheck
+npm run build
+```
+
+The deployment workflow runs all three before remote migration/deploy. Do not
+use the production D1 database for unit tests.
+
+## Read next
+
+- [Deployment workflow](/03-cloudflare/deployment-workflow)
+- [Join form code tour](/04-code-tour/join-form-line-by-line)
+- [Recruitment Function code tour](/04-code-tour/recruitment-function-line-by-line)

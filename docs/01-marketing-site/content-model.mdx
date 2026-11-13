@@ -1,0 +1,76 @@
+---
+title: "Homepage content model"
+description: "Learn how src/content/site.ts separates copy from layout using const objects, arrays, union types, and the satisfies operator."
+---
+
+## One source for marketing copy
+
+`src/content/site.ts` exports named objects and arrays for the organization,
+hero text, tech list, metrics, mission, objectives, AmazeCC and GoRobo
+showcases, teams, contributors, timeline, and final call to action. Section
+components import these values and render them. This keeps editorial text
+separate from JSX layout.
+
+## JavaScript data structures
+
+An object groups named fields:
+
+```ts
+export const ORG = {
+  name: "Amaze Continuity Projects",
+  short: "ACP",
+  github: "https://github.com/AmazeContinuityProjects",
+};
+```
+
+`export` lets another file import the name. `const` prevents reassigning the
+binding. The object contains key/value pairs. Arrays use square brackets and
+hold repeated entries, such as tech labels or timeline records.
+
+## Literal types and `as const`
+
+`FeatureVisual` is a union of permitted strings (`"attendance"`, `"ffcs"`, and
+the other illustration names). `Feature` describes the fields each AmazeCC
+feature needs: title, body, visual key, and card size. This lets the editor
+catch a misspelled visual key or a missing required field.
+
+The expression `headline: ["The student", "operating system"] as const` marks
+the array as readonly literal values. Without `as const`, TypeScript may widen
+the elements to general `string` values. `satisfies Feature[]` checks the
+feature array against the shape while preserving useful information about its
+individual values.
+
+## Where to make common edits
+
+| Change | Source to edit |
+|---|---|
+| Hero headline or links | `HERO` in `src/content/site.ts` |
+| Technology labels | `TECH` |
+| Animated homepage metrics | `STATS` |
+| Mission paragraphs and objectives | `MISSION` and `OBJECTIVES` |
+| AmazeCC cards and illustrations | `AMAZECC.features` |
+| GoRobo category counts | `GOROBO.categories` |
+| Team cards | `TEAMS` |
+| Timeline items | `JOURNEY` |
+| Final heading and button | `FINAL_CTA` |
+
+These constants are rendered into public pages. Do not put secrets or private
+applicant data here. They are included in the static client-visible site.
+
+## Static copy versus live data
+
+Most homepage figures and project descriptions are constants committed in this
+repository. They do not fetch live metrics automatically. The marketing page
+comment in `site.ts` says the figures were recorded from repositories on a
+specific date; update them deliberately when verified counts change.
+
+The recruitment configuration is a separate source in
+`src/lib/recruitment-config.ts`. Both browser fallback and server GET currently
+use `DEFAULT_CONFIG`, so edits to that value affect both copies after the next
+build/deploy.
+
+## Read next
+
+- [Homepage section composition](/01-marketing-site/homepage-sections)
+- [Recruitment configuration and limits](/02-recruitment/recruitment-api)
+- [TypeScript syntax guide](/04-code-tour/typescript-react-and-http-syntax)

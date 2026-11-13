@@ -1,0 +1,20 @@
+---
+title: Static export and Pages Functions
+description: The boundary between prebuilt web pages and the server-side recruitment endpoint.
+---
+
+## Two runtimes in one project
+
+Next.js builds the marketing pages ahead of time. `next.config.ts` sets `output: "export"`; the build writes browser-ready files into `out/`. Cloudflare Pages serves these files without running a Next.js server for each page request.
+
+The recruitment API still needs server-side code. Cloudflare Pages Functions provide that runtime. The file `functions/api/recruitment.ts` maps to `/api/recruitment`: the directory names become URL path segments. Its `onRequestGet` and `onRequestPost` exports handle the corresponding HTTP methods.
+
+`public/_routes.json` includes `/api/*` so requests under that prefix are sent through Functions. Other paths can be served directly from the static export. `wrangler.json` names `out` as the Pages build output and binds the D1 database to the function as `env.DB`.
+
+<Steps>
+  <Step title="Build static files">Next renders route output and bundles client components into `out/`.</Step>
+  <Step title="Deploy Pages">Wrangler uploads `out/` to the `acp-landing` Pages project.</Step>
+  <Step title="Handle a form request">The browser calls `/api/recruitment`; the matching Pages Function validates the request and uses D1.</Step>
+</Steps>
+
+`npm run dev` starts the Next.js development server and is useful for the visual site, but it does not provide the Pages Function runtime. Use `npm run preview` to preview the built Pages app with Wrangler locally. Confirm the scripts in `package.json` before changing this workflow.

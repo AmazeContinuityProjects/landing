@@ -1,0 +1,23 @@
+# Ask the shared Mintlify repository to rebuild when handbook content changes.
+name: Notify docs repo
+
+on:
+  push:
+    branches: [main]
+    paths: ["docs/**"]
+
+permissions: {}
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch docs-updated to the docs repo
+        env:
+          GH_TOKEN: ${{ secrets.DOCS_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "DOCS_DISPATCH_TOKEN not set - skipping docs-updated dispatch"
+            exit 0
+          fi
+          gh api repos/AmazeContinuityProjects/docs/dispatches -f event_type=docs-updated

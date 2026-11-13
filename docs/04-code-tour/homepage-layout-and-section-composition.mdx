@@ -1,0 +1,20 @@
+---
+title: Homepage layout and section composition
+description: Trace a request for the home page through its layout, route, data, and sections.
+---
+
+## Root layout
+
+`src/app/layout.tsx` wraps every route. It loads Archivo, Instrument Sans, and JetBrains Mono through `next/font`, imports global CSS, and defines site metadata and viewport settings. The returned document includes a skip link, `GlassNav`, the page's `children` inside `main`, the footer, and the custom cursor. In React, `children` is the nested page content supplied by the router.
+
+## Homepage route
+
+`src/app/page.tsx` composes the page in reading order: Hero, TechMarquee, Stats, Mission, decorative Thread, AmazeCCShowcase, Teams, another Thread, Journey, and FinalCta. Each imported component owns one visual section, which keeps the route readable and lets a section be understood in its own module.
+
+The content values live in `src/content/site.ts`: organization details, hero copy, technology labels, statistics, mission, objectives, showcase features, teams, contributors, journey milestones, and final call to action. These are source constants, not a live analytics feed. Changing them changes what the build renders; no database request updates them automatically.
+
+## Server and client components
+
+Next.js App Router components are server components by default. A module that needs browser state, event handlers, or browser APIs declares `'use client'` at its client boundary. Keep static page composition on the server where possible and put interactivity in the smaller components that need it.
+
+To add a homepage section, inspect the route order and section styling, create a focused component if appropriate, use the shared data model where suitable, and check mobile and reduced-motion behavior. Update the relevant content and source map pages when architecture changes.

@@ -1,0 +1,29 @@
+---
+title: Source module catalog
+description: Find the implementation area responsible for each part of the Landing application.
+---
+
+| Path | Responsibility |
+| --- | --- |
+| `src/app/layout.tsx` | Shared HTML document, fonts, metadata, navigation, footer, global layout. |
+| `src/app/page.tsx` | Homepage section composition. |
+| `src/app/join/page.tsx` | Recruitment page route and form placement. |
+| `src/app/projects/amazecc/` | Local AmazeCC showcase route. |
+| `src/app/projects/gorobo/` | Local GoRobo sample storefront route. |
+| `src/content/site.ts` | Typed homepage copy, feature data, teams, and journey constants. |
+| `src/components/site/Sections.tsx` | Marketing section components such as mission, stats, teams, and journey. |
+| `src/components/site/Showcase.tsx` | AmazeCC and GoRobo feature showcase rendering. |
+| `src/components/site/FeatureVisuals.tsx` | Small illustrative showcase visuals. |
+| `src/components/Reveal.tsx` | Reveal-on-scroll and count-up effects. |
+| `src/components/CustomCursor.tsx` | Pointer-following decorative cursor behavior. |
+| `src/components/CollaboratorCursors.tsx` | Decorative cursor illustrations in the hero. |
+| `src/components/join/JoinForm.tsx` | Browser-side recruitment form state and submit experience. |
+| `src/components/ui/` | Reusable Button, Card, and form controls. |
+| `src/lib/recruitment-config.ts` | Public application cycle, fields, options, and limits. |
+| `src/lib/recruitment.ts` | Browser HTTP helpers and typed API responses. |
+| `functions/api/recruitment.ts` | Pages Function: public configuration GET and validated application POST. |
+| `migrations/` | D1 schema history. |
+| `tests/recruitment.test.ts` | Automated recruitment API tests using a fake D1 binding. |
+| `scripts/configure-cloudflare.mjs` | Validates and applies the configured D1 database identifier. |
+| `.github/workflows/deploy-cloudflare.yml` | Production build, migration, and Pages deploy on main pushes. |
+| `.github/workflows/notify-docs.yml` | Notifies the separate Mintlify aggregator when docs change. |

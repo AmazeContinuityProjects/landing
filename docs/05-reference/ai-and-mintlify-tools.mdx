@@ -1,0 +1,25 @@
+---
+title: AI and Mintlify tools
+description: How developers and AI agents should discover, edit, and validate this handbook.
+---
+
+## Source of truth
+
+This repository's `grounding/` directory is the agent-oriented product and architecture grounding. `AGENTS.md` points contributors to it. The `docs/` directory is the human-facing handbook and is aggregated into the shared Mintlify docs site. When behavior is uncertain, inspect the code, tests, migrations, and workflow; do not infer behavior from marketing prose.
+
+The repo includes the Mintlify project skill under `.agents/skills/mintlify/` and MCP entries in `.codex/config.toml`. The documentation search MCP is read-only knowledge search. The Mintlify admin MCP is intended for dashboard and content management. Use least privilege and do not put applicant data or credentials into prompts or documentation.
+
+## Editing workflow
+
+1. Read `grounding/README.md` and `grounding/agent-playbook.md` before making broad changes.
+2. Verify every behavioral statement against current source. Keep static GoRobo/AmazeCC showcase descriptions separate from production integrations.
+3. Add each page to `docs/docs.json` navigation. Mintlify does not automatically publish an MDX file just because it exists in the folder.
+4. Use required frontmatter (`title`, `description`), MDX components documented by the installed Mintlify skill, and avoid a duplicate body H1.
+5. Run the installed Mintlify CLI validation and preview when available. Review links and page rendering.
+6. Open a pull request. A merge to `main` triggers the production workflow and docs aggregation notification.
+
+The installed command-line tool can provide the current Mintlify reference for components and workflows. Consult `.agents/skills/mintlify/SKILL.md` for the project's component, validation, and publishing workflow instructions.
+
+## MCP context
+
+Mintlify pages can provide contextual actions such as copying a page or opening it in an editor. `docs/docs.json` configures these actions. The Mintlify docs MCP supports documentation discovery; it does not replace source inspection. The admin MCP may change hosted content, so repository pull requests remain the reviewable path for this source-controlled handbook.

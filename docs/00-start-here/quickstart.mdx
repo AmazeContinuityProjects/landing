@@ -1,0 +1,102 @@
+---
+title: "Run the full site locally"
+description: "Install the landing app, apply the local D1 migration, run the Cloudflare Pages preview, and understand the UI-only development server."
+---
+
+## Prerequisites
+
+- Node.js 22 (the GitHub deploy workflow uses Node 22).
+- npm, which is included with Node.js.
+- A terminal and a browser.
+
+You do not need a Cloudflare login to use the local preview. The repository's
+development D1 database lives under Wrangler's ignored `.wrangler/` folder.
+
+## Install and run
+
+<Steps>
+  <Step title="Install locked dependencies">
+
+```bash
+npm ci
+```
+
+`npm ci` installs the versions recorded in `package-lock.json`. Use it for a
+repeatable install rather than changing the lockfile accidentally with a
+package update.
+  </Step>
+  <Step title="Create the local D1 schema">
+
+```bash
+npm run db:migrate:local
+```
+
+Wrangler applies SQL files from `migrations/` to the local database for the
+`DB` binding. It does not change the production D1 database.
+  </Step>
+  <Step title="Build and start the Pages preview">
+
+```bash
+npm run preview
+```
+
+This runs `npm run build` first, then `wrangler pages dev out`. Open the local
+URL Wrangler prints. Unlike the Next.js-only development server, the Pages
+preview can run `functions/api/recruitment.ts` and local D1 together.
+  </Step>
+</Steps>
+
+## Commands compared
+
+<Tabs>
+  <Tab title="Full Pages preview">
+
+```bash
+npm run db:migrate:local
+npm run preview
+```
+
+Use this to test the form and its serverless API end to end.
+  </Tab>
+  <Tab title="UI-only Next.js preview">
+
+```bash
+npm run dev
+```
+
+This is faster for layout work, but it does not serve the Pages Function. The
+form can load its static fallback configuration, while application submission
+cannot be persisted unless an API is separately available.
+  </Tab>
+</Tabs>
+
+## Before you stop
+
+```bash
+npm test
+npm run typecheck
+npm run build
+```
+
+`npm test` runs the Node test suite through `tsx`. `npm run typecheck` invokes
+TypeScript without emitting JavaScript. `npm run build` creates the static
+export in `out/`.
+
+<Warning>
+  Do not run `npm run db:migrate:remote` for ordinary local development. It
+  applies migrations to the configured remote D1 database.
+</Warning>
+
+## Common issues
+
+<AccordionGroup>
+  <Accordion title="The homepage loads but the recruitment config request fails">
+    Confirm the local D1 migration ran, then use `npm run preview` rather than `npm run dev` when testing the Pages Function.
+  </Accordion>
+  <Accordion title="The submit button fails in the UI-only server">
+    The Next.js development server does not host `functions/api/recruitment.ts`. Use the Pages preview for a complete local request path.
+  </Accordion>
+  <Accordion title="Wrangler says the D1 binding is missing">
+    Check that `wrangler.json` declares a `d1_databases` entry whose binding is `DB`, and that the local migration has been applied.
+  </Accordion>
+</AccordionGroup>

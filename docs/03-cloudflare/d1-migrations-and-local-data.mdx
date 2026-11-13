@@ -1,0 +1,20 @@
+---
+title: D1 migrations and local data
+description: How SQL migration files define recruitment storage and how to apply them safely.
+---
+
+## Schema source
+
+The SQL files in `migrations/` are the versioned database history. The first migration creates `applications`, including required fields, JSON validity checks for the roles and links text, a 3-to-40 hours constraint, consent constraint, timestamps, and a unique `(cycle, email)` key. Email uses SQLite's `NOCASE` collation so case differences do not create separate applications.
+
+Do not edit an already-applied migration to change a deployed database. Add a new numbered SQL file that changes the schema, then review what it does to existing rows. A migration changes structure or data; it is not the same as rebuilding the static website.
+
+## Local database
+
+Run `npm run db:migrate:local` to apply migrations to Wrangler's local D1 database. `npm run preview` runs the built site in the Pages-compatible local runtime, where the `DB` binding can be exercised. Keep test submissions synthetic. The plain `npm run dev` command does not run the Pages Function.
+
+## Remote database
+
+The deployment workflow runs `npm run db:migrate:remote` before the Pages upload. Wrangler uses the D1 binding in `wrangler.json` and the account credentials configured by GitHub Actions. A migration error stops the job before the upload step. Read the exact script in `package.json` and migration file before changing this behavior.
+
+<Warning>Never copy applicant rows into a Git commit, issue, screenshot, or documentation example. Use fabricated data for local development.</Warning>

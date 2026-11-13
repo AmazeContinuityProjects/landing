@@ -1,0 +1,35 @@
+---
+title: "Recruitment application"
+description: "A source-based guide to the applicant form, server validation, D1 persistence, privacy boundaries, and failure handling."
+---
+
+The recruitment route is the only user-facing data-entry flow in this repository.
+The browser asks the Function for configuration, collects an application, and
+sends JSON to the same-origin `/api/recruitment` route. Cloudflare validates it
+again and writes it to D1.
+
+<Warning>
+  Applications contain personal information. Do not use real applicant values
+  in examples or screenshots. The public API has no read/list route for
+  submitted applications.
+</Warning>
+
+## Follow the feature
+
+- [Applicant journey](/02-recruitment/applicant-journey)
+- [Form state and client validation](/02-recruitment/form-state-and-validation)
+- [Server API and validation rules](/02-recruitment/recruitment-api)
+- [Database row and update behavior](/02-recruitment/database-model-and-upserts)
+- [Privacy and failures](/02-recruitment/privacy-and-failure-behavior)
+- [Tests for the flow](/02-recruitment/testing-the-flow)
+
+## Main source files
+
+| File | Owns |
+|---|---|
+| `src/app/join/page.tsx` | Route metadata and recruitment page presentation |
+| `src/components/join/JoinForm.tsx` | Controlled inputs, field state, UI feedback, submit handler |
+| `src/lib/recruitment-config.ts` | Shared default configuration and limit types |
+| `src/lib/recruitment.ts` | Browser GET/POST helpers and result types |
+| `functions/api/recruitment.ts` | Cloudflare Pages GET/POST handlers and server validation |
+| `migrations/0001_applications.sql` | D1 table, constraints, timestamps, unique cycle/email key |

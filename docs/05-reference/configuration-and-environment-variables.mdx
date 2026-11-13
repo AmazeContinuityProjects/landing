@@ -1,0 +1,18 @@
+---
+title: Configuration and environment variables
+description: Where settings live, which values reach the browser, and which belong in GitHub secrets.
+---
+
+| Setting | Location | Browser visible? | Meaning |
+| --- | --- | --- | --- |
+| Recruitment cycle, open flag, role IDs, input limits | `src/lib/recruitment-config.ts` | Yes | Public form configuration compiled into the site and returned by GET. |
+| API origin | `NEXT_PUBLIC_API_URL` | Yes | Optional API base URL; absent/empty means same-origin API. |
+| Pages output and project | `wrangler.json` | No | Cloudflare Pages project, output directory, compatibility, D1 binding and migrations. |
+| D1 database ID override | GitHub Actions variable `CLOUDFLARE_D1_DATABASE_ID` | No | Optional override consumed by `scripts/configure-cloudflare.mjs`. |
+| Cloudflare account | Deploy workflow environment | No | Account ID used by Wrangler. |
+| Cloudflare API token | GitHub Actions secret `CLOUDFLARE_API_TOKEN` | No | Authenticates production deploy and remote migration. |
+| Docs dispatch credential | GitHub Actions secret `DOCS_DISPATCH_TOKEN` | No | Sends the docs repository dispatch after handbook changes land on main. |
+
+`NEXT_PUBLIC_` values are public by design: a visitor can inspect bundled JavaScript and network requests. Store credentials in GitHub secrets or platform bindings, never in client configuration, source examples, or screenshots. The committed Cloudflare configuration contains a database identifier, which identifies a resource but is not itself an authentication token.
+
+Changing a public recruitment setting affects what the browser displays; enforcement-sensitive constraints are also checked in the Function. The Function currently imports `DEFAULT_CONFIG` from the same shared module, so the open flag and validation limits have one source file used by both runtimes.

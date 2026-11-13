@@ -1,0 +1,15 @@
+---
+title: Cloudflare and deployment
+description: How the static site, Pages Function, D1 database, and GitHub deployment fit together.
+---
+
+This project builds its visible pages as static HTML and JavaScript, while Cloudflare Pages also runs one server-side function for recruitment applications. Cloudflare D1 stores those applications.
+
+<CardGroup cols={2}>
+  <Card title="Static export and Functions" href="/03-cloudflare/static-export-and-pages-functions">Understand what runs in a browser and what runs on Cloudflare.</Card>
+  <Card title="D1 and migrations" href="/03-cloudflare/d1-migrations-and-local-data">Learn how the database schema is created locally and remotely.</Card>
+  <Card title="Configuration" href="/03-cloudflare/configuration-reference">Find the files and environment values that configure the deployment.</Card>
+  <Card title="Deployment workflow" href="/03-cloudflare/deployment-workflow">Follow a push from GitHub Actions to Cloudflare Pages.</Card>
+</CardGroup>
+
+<Warning>Every push to `main` starts the production deployment workflow. That workflow also runs remote D1 migrations, including when the changed files are documentation.</Warning>

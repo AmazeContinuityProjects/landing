@@ -1,0 +1,43 @@
+---
+title: "Project showcase pages"
+description: "Distinguish the homepage project cards from the dedicated AmazeCC and GoRobo routes and identify which data is local sample content."
+---
+
+The marketing homepage includes project sections rendered by `Showcase.tsx`.
+Dedicated routes also exist under `src/app/projects/`. Those routes are part of
+this landing repository and should be inspected independently before calling
+them production applications.
+
+## AmazeCC showcase route
+
+`src/app/projects/amazecc/page.tsx` contains a project showcase with feature
+cards, team data, and interactive selection within that page. It is a local
+presentation view. It is not the AmazeCC application, and its UI does not
+automatically call the AmazeCC API.
+
+## GoRobo sample route
+
+`src/app/projects/gorobo/page.tsx` declares `HARDWARE_CATALOG`, `TEAM_MEMBERS`,
+and `ORDER_HISTORY` arrays in the page module. A React `cart` state object maps
+each sample item ID to a quantity. `addToCart` and `removeFromCart` update a
+copied object. `Object.entries` and `reduce` calculate the displayed item count
+and estimated total. `handleWhatsAppCheckout` creates a WhatsApp URL from the
+sample cart.
+
+The source labels its order history as mock data and the WhatsApp phone as a
+placeholder. This page has no store API call, inventory sync, payment, or
+production checkout integration in this repository. Do not use applicant or
+real customer data in its examples.
+
+## Homepage GoRobo section
+
+`src/components/site/Showcase.tsx` uses `GOROBO` from `src/content/site.ts` for
+the homepage category display. Category counts and list data are local
+constants. This homepage card is distinct from the `/projects/gorobo/` sample
+cart and from the separately hosted GoRobo product.
+
+## Read next
+
+- [Homepage section composition](/01-marketing-site/homepage-sections)
+- [Module catalog](/04-code-tour/source-module-catalog)
+- [Data and route reference](/05-reference/routes-data-and-statuses)

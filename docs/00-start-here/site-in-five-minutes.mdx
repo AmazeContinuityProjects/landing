@@ -1,0 +1,54 @@
+---
+title: "The site in five minutes"
+description: "A mental model of the Next.js static site, client-side interactions, recruitment Pages Function, and Cloudflare D1."
+---
+
+The repository combines two types of web code:
+
+- **Static website files**: HTML, CSS, JavaScript, and images generated into
+  `out/` by Next.js.
+- **A Cloudflare Pages Function**: server-side TypeScript at
+  `functions/api/recruitment.ts`. Cloudflare runs it for `/api/recruitment`.
+
+The browser downloads the static site. When an applicant requests recruitment
+configuration or submits an application, browser code sends an HTTP request to
+the Function. The Function validates the request and uses its `DB` binding to
+read or write the D1 database.
+
+<Info>
+  The recruitment Function is not part of the static HTML export. Cloudflare
+  Pages deploys the Function alongside the `out/` files.
+</Info>
+
+## Main routes
+
+| URL | Source | Purpose |
+|---|---|---|
+| `/` | `src/app/page.tsx` | Marketing homepage assembled from sections |
+| `/join/` | `src/app/join/page.tsx` and `JoinForm.tsx` | Recruitment introduction and application form |
+| `/projects/amazecc/` | `src/app/projects/amazecc/page.tsx` | AmazeCC project showcase |
+| `/projects/gorobo/` | `src/app/projects/gorobo/page.tsx` | In-repository GoRobo sample storefront |
+| `/api/recruitment` | `functions/api/recruitment.ts` | GET public config and POST application submission |
+
+The two `/projects/` pages are separate routes from the real AmazeCC and GoRobo
+products. In particular, the GoRobo route contains local sample products and a
+sample cart. Read its source before describing it as a production store.
+
+## Where behavior lives
+
+`src/app/layout.tsx` wraps each page with the site navigation, footer, global
+fonts, and custom cursor. `src/app/page.tsx` composes the home sections.
+`src/content/site.ts` contains much of the marketing copy and project data.
+`src/components/site/` contains the reusable sections and visual effects.
+
+The recruitment form calls functions in `src/lib/recruitment.ts`. Those helpers
+send requests to the same website origin by default. Cloudflare maps
+`/api/recruitment` to the `functions/api/recruitment.ts` file, and the D1 table
+is declared in `migrations/0001_applications.sql`.
+
+## Learn the layers
+
+1. Read [routes and the shared layout](/01-marketing-site/routes-and-layout).
+2. Read [the applicant journey](/02-recruitment/applicant-journey).
+3. Follow [one request from click to database](/00-start-here/request-from-click-to-database).
+4. Learn how the [static export and Pages Function fit together](/03-cloudflare/static-export-and-pages-functions).

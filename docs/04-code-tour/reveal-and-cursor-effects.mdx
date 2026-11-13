@@ -1,0 +1,22 @@
+---
+title: Reveal and cursor effects
+description: How IntersectionObserver and animation frames create motion without per-frame React renders.
+---
+
+## Reveal and CountUp
+
+`src/components/Reveal.tsx` contains reveal behavior and the count-up display. `IntersectionObserver` watches an element relative to the viewport. When it enters the configured threshold, code marks it visible and stops observing when the effect cleanup runs. This avoids continuously polling scroll position.
+
+The count-up effect uses `requestAnimationFrame` to update a DOM-facing value over time. The callback receives a timestamp; the code calculates progress and schedules another frame until it reaches the target. The effect cancels a pending frame during cleanup. Reduced-motion preference is checked so motion-sensitive users can see the final value without the animated transition.
+
+## Custom cursor
+
+`CustomCursor.tsx` first checks device pointer capability and the reduced-motion preference. It listens for pointer movement only when a custom cursor is appropriate. Refs hold DOM elements and frame bookkeeping; refs can change without triggering a React render. Animation-frame updates move those elements directly, avoiding a component render on every pointer event.
+
+The effect removes listeners and cancels pending animation work when the component unmounts or relevant conditions change. It avoids taking over text-entry controls so the system cursor remains useful for inputs and editable content.
+
+## Decorative collaborator cursors
+
+`CollaboratorCursors.tsx` renders illustrative cursors in the hero. They are decorative elements, not live remote collaborators. An observer pauses or reduces work when the hero is offscreen.
+
+When editing motion, test keyboard operation, touch, reduced motion, and users who do not have a fine pointer. CSS transitions and JavaScript effects should not make content inaccessible when animation is unavailable.

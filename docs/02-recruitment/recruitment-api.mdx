@@ -1,0 +1,84 @@
+---
+title: "Recruitment API and server validation"
+description: "Document GET /api/recruitment and POST validation, request-size handling, origin checks, field limits, spam trap, D1 write, and response statuses."
+---
+
+**Source:** `functions/api/recruitment.ts`.
+
+The Cloudflare Pages Functions convention maps this file to
+`/api/recruitment`. `onRequestGet` and `onRequestPost` are exported handler
+functions. `Env` describes the runtime environment binding: `DB` is a
+Cloudflare D1 database handle.
+
+## GET: publish configuration, not applications
+
+`onRequestGet` returns `{ success: true, ...DEFAULT_CONFIG }` as JSON. It
+exposes role descriptions, cycle, open state, deadline, email-domain list, and
+limits. It never reads the `applications` table.
+
+The local `json()` helper uses `Response.json` and adds `Cache-Control:
+no-store` and `X-Content-Type-Options: nosniff` headers to both success and
+error responses.
+
+## POST: reject bad requests before persistence
+
+The handler applies checks in this order:
+
+1. If an `Origin` header exists and its origin differs from the request URL,
+   return `403`. Requests without an Origin header are allowed by this check.
+2. Require a content type beginning with `application/json`, otherwise return
+   `415`.
+3. Read the request body as a stream and stop once it exceeds **24,000 bytes**,
+   even if `Content-Length` is missing or wrong. Too large returns `413`.
+4. Decode UTF-8 and parse JSON. Reject missing, malformed, array, null, or
+   primitive JSON with `400`.
+5. Silently accept the hidden `website` honeypot without storing a row.
+6. Reject submissions if the compiled `DEFAULT_CONFIG.open` is false.
+7. Normalize text, validate every field, then write only if `errors` is empty.
+
+## Validation rules in source
+
+| Field | Server rule |
+|---|---|
+| `name` | Required, at most 100 characters |
+| `email` | Valid basic email shape, at most 254 characters, lowercased and trimmed |
+| `regNo` | Optional string up to 200 characters |
+| `year` | One of `1`, `2`, `3`, `4`, `5`, `grad`, or `other` |
+| `roles` | 1 to 3 distinct IDs present in `DEFAULT_CONFIG.roles` |
+| `otherRole` | Required up to 120 characters when `other` is selected |
+| `why` | 40 to 1,500 characters |
+| `experience` | Optional string up to 1,500 characters |
+| `hoursPerWeek` | JSON number from 3 through 40; numeric strings are rejected |
+| `consent` | Must be the boolean `true` |
+| `links` | Array with up to 5 entries, each a valid `http:` or `https:` URL of at most 2,048 characters |
+
+Each invalid field adds a message to `errors`, then the handler returns
+`400` with `error: "invalid_fields"`. No D1 query is issued for invalid input.
+
+## Storage and responses
+
+When `env.DB` is missing or a D1 write fails, the Function returns `503` and
+does not reveal database details. It also avoids logging applicant fields.
+The SQL uses a prepared statement and `.bind(...)`; user values are passed as
+parameters rather than interpolated into SQL text.
+
+On success the handler returns `{ success: true, status: "received" }`. The
+client must still check both the HTTP status and JSON `success` field. An HTTP
+error and an application-level JSON error are related but separate signals.
+
+The endpoint has **no list/read operation for stored applications**. Authorized
+maintainers review submissions through D1 account access, not through this
+public Function.
+
+## API playground boundary
+
+This POST writes personal information into a production database. The public
+handbook documents the request contract without an interactive production
+“try” button, to avoid inviting accidental real submissions. Use test fixtures
+and a separate non-production database when changing server code.
+
+## Read next
+
+- [Database row and idempotent update](/02-recruitment/database-model-and-upserts)
+- [Function line-by-line tour](/04-code-tour/recruitment-function-line-by-line)
+- [Privacy and failure handling](/02-recruitment/privacy-and-failure-behavior)

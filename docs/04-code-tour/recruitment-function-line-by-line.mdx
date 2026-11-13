@@ -1,0 +1,36 @@
+---
+title: Recruitment Function step by step
+description: Walk through HTTP handling, validation, normalization, and the D1 write.
+---
+
+Source: `functions/api/recruitment.ts`. Cloudflare Pages calls the exported method handler for the incoming request. The `Env` type documents the runtime binding: `DB` is the D1 database object supplied by `wrangler.json`.
+
+## Shared response helper
+
+The `json` helper serializes a value into a `Response` with a JSON content type. It also sets `Cache-Control: no-store` because an applicant response must not be cached, and `X-Content-Type-Options: nosniff` as a browser safety header. The helper centralizes these headers so each branch returns them consistently.
+
+## GET configuration
+
+`onRequestGet` returns the public defaults from `DEFAULT_CONFIG`. The object describes the open cycle and form choices. This route does not query or return application rows; configuration is not an applicant list.
+
+## POST request checks
+
+The POST handler first checks the `Origin` header when present: its origin must match the request URL's origin. A missing Origin does not fail this particular check. It then requires a content type starting with `application/json`; otherwise it returns 415.
+
+The body reader consumes the request stream in chunks and tracks bytes. This bounds memory and rejects bodies over 24,000 bytes before parsing. It decodes and parses JSON inside error handling, then rejects null, arrays, and non-object top-level values. A TypeScript cast alone would not make arbitrary JSON safe; the handler validates properties explicitly.
+
+If the honeypot field `website` is populated, the function returns the same generic received response used by a successful application, without writing to D1. If `DEFAULT_CONFIG.open` is false, normal submissions are rejected with 403.
+
+## Normalize and validate
+
+The function trims text fields and lowercases the email before validation. It checks required name, email syntax and length, optional registration number length, known role IDs and role count/uniqueness, required details for the `other` role, motivation length, experience length, numeric hours, strict `consent === true`, and link count and URL safety.
+
+Errors are collected by field. If any exist, the function returns 400 with `error: "invalid_fields"` and an error map so the form can associate feedback with controls. The server's checks protect the database even if a caller skips or changes the frontend.
+
+## Prepared write and response
+
+The SQL uses placeholders and `.bind(...)` for every submitted value. This keeps values separate from SQL syntax. Roles and links are serialized to JSON text for their constrained database columns. Blank registration numbers become `null`.
+
+The `ON CONFLICT(cycle, email) DO UPDATE` clause makes a repeat application for the same normalized email and cycle update that row. Its identifier and creation timestamp remain; the update refreshes editable fields and `updated_at`. D1 errors are caught, logged without applicant fields, and returned as a generic 503. Success returns the generic `received` status, including for an update, so the response does not reveal whether an email already existed.
+
+Read the migration in `migrations/` alongside this function: the SQL schema is the other half of the validation and storage contract.

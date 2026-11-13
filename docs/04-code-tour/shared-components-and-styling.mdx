@@ -1,0 +1,20 @@
+---
+title: Shared components and styling
+description: Understand the button and card primitives, class helper, Tailwind, and design tokens.
+---
+
+## Component primitives
+
+`src/components/ui/Button.tsx` accepts normal button attributes plus a project variant. The variant chooses a set of classes; spreading the remaining props onto the native `<button>` preserves browser features such as `type`, `disabled`, and `onClick`. `Card.tsx` wraps content in a styled `div` and can accept additional properties.
+
+Both use `cn` from `src/lib/utils.ts`. `clsx(inputs)` combines conditional class inputs into a string; `twMerge(...)` resolves conflicting Tailwind utility classes so a later caller override can replace an earlier utility of the same kind. This is class-string composition, not a CSS compiler.
+
+## Tailwind and global CSS
+
+The project uses Tailwind CSS v4. `src/app/globals.css` imports Tailwind and defines the shared colors, fonts, spacing, and global base styles. The `@theme` block exposes design values to utility generation. Component `className` values use utility classes for layout, spacing, color, responsive breakpoints, and interaction states.
+
+Responsive prefixes apply styles at viewport breakpoints; for example, a `md:` utility takes effect at the configured medium breakpoint and above. State prefixes such as `hover:` apply when the matching interaction state is active. Check existing token names and patterns before introducing a new color or arbitrary value.
+
+## Accessible patterns
+
+Prefer semantic HTML elements (`button`, `nav`, `main`, headings) over clickable generic containers. Keep visible focus styles and provide text labels for controls. Decorative imagery and cursor effects should not be the only way to understand a section. The site includes reduced-motion behavior; preserve it when adding animation.

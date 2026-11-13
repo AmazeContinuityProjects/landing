@@ -1,0 +1,104 @@
+---
+title: "Form state and client validation"
+description: "Follow controlled inputs, typed state, role toggling, useMemo, form submit, API helper results, and visible errors in JoinForm.tsx."
+---
+
+**Source:** `src/components/join/JoinForm.tsx`.
+
+## Client component and imports
+
+The first line, `"use client"`, marks this file as a client component. It uses
+React hooks and browser APIs. `Link` comes from Next.js, `cn` combines CSS
+classes, and `fetchRecruitmentConfig` / `submitApplication` own the network
+operations. `import type` brings in a TypeScript-only type; it is removed from
+the emitted JavaScript.
+
+`inputCls`, `labelCls`, and `hintCls` are shared CSS class strings. `FieldError`
+returns `null` if there is no message; otherwise it renders an alert paragraph.
+The `message?: string` prop is optional. `YEARS` is the list of visible labels
+and values used to construct the native `<select>` options.
+
+## State declarations
+
+The component calls `useState` for each field and UI state. The generic
+`useState<RecruitmentConfig | null>(null)` allows either a config object or
+`null`; the vertical bar means “one of these types.” `string[]` is an array of
+strings, used for selected roles. `Record<string, string>` is a dictionary of
+field names to validation messages. `done` is a union of known status strings
+or null.
+
+Each setter schedules a React render with the next value. Inputs are
+**controlled** when their `value` prop comes from state and their `onChange`
+handler calls the matching setter.
+
+## Effect: load public configuration
+
+`useEffect(..., [])` runs once after the first browser render. It calls
+`fetchRecruitmentConfig()` and passes `setConfig` as the Promise's success
+callback. `.catch(...)` sets a load error if the helper unexpectedly rejects.
+The helper normally catches its own fetch/parse errors and returns
+`DEFAULT_CONFIG`, so the error panel is a last-resort branch.
+
+## Role selection and link parsing
+
+`maxRoles` uses optional chaining (`config?.limits.maxRoles`) because config is
+initially null, then nullish coalescing (`?? 3`) supplies a fallback. `toggleRole`
+uses a **functional state setter**: `setRoles(current => ...)` calculates from
+the freshest array. If the ID exists, `.filter` removes it. If it is new but the
+limit is reached, the same array is returned. Otherwise spread syntax creates
+a new array with the ID appended.
+
+`useMemo` caches `linkList` until `links` changes. `.split(/[\\s,]+/)` breaks
+text on whitespace or commas. `.map` trims entries and `.filter(Boolean)`
+removes empty strings.
+
+## Submit handler, in execution order
+
+`submit(event: React.FormEvent)` is attached to the `<form>`'s `onSubmit`.
+
+1. `event.preventDefault()` stops a normal browser navigation/reload.
+2. A guard returns if a submission is already in progress.
+3. Old errors and messages are cleared.
+4. A regular expression checks the basic email shape for immediate feedback.
+   This improves usability; server validation is still authoritative.
+5. `setSubmitting(true)` marks the request as active.
+6. `submitApplication({...})` receives a new object. Optional text becomes
+   `undefined` when blank; `Number(hours)` turns the numeric input string into a
+   number; roles and parsed links are already arrays.
+7. After the Promise resolves, the busy flag is cleared.
+8. A successful result sets `done` and scrolls the page to the confirmation.
+9. A failed result sets the general message and maps field errors into state.
+
+The use of `await` pauses only this handler, not the browser. The `submit`
+function's return value is not what renders success; the state setters do.
+
+## Render branches and fields
+
+Early `if (...) return (...)` branches show a connection error, a loading
+skeleton, the closed-recruitment message, or the success view. Only after those
+branches does the component render the editable form.
+
+The form uses `noValidate`, so it controls its own validation messages rather
+than letting the browser block submission with its default bubble. The native
+`required` attributes remain useful semantics and accessibility hints. Each
+`<label htmlFor="email">` points at an input `id="email"`. `FieldError` renders
+the matching server/client error next to that field. `maxLength` mirrors a
+display constraint, but the Function checks the actual request too.
+
+Role cards are produced by `config.roles.map(...)`. `checked` is derived from
+`roles.includes(role.id)`. Once the maximum is reached, unchecked options are
+disabled while checked ones can still be toggled off. This keeps the user from
+getting stuck at the limit.
+
+## Important distinction
+
+HTML attributes such as `required`, `maxLength`, and the local email regex can
+be bypassed by editing a request. The Pages Function repeats the important
+rules against untrusted JSON. Follow [server-side validation](/02-recruitment/recruitment-api)
+when changing limits or fields.
+
+## More source tours
+
+- [Recruitment Function](/04-code-tour/recruitment-function-line-by-line)
+- [TypeScript and React syntax](/04-code-tour/typescript-react-and-http-syntax)
+- [Form and API helper module map](/04-code-tour/source-module-catalog)
