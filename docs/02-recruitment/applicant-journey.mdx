@@ -1,0 +1,56 @@
+---
+title: "Applicant journey"
+description: "Understand the application page states, configuration loading, editable fields, submission, confirmation, and retry behavior."
+---
+
+## What the applicant experiences
+
+`src/app/join/page.tsx` exports page metadata and renders the recruitment
+introduction, process information, and `<JoinForm />`. The form is a client
+component because its inputs, async requests, and feedback change in the
+browser.
+
+The form moves through these states:
+
+1. **Loading config:** `config` starts as `null`; a skeleton is displayed.
+2. **Configuration available:** the server responds with roles, limits, and
+   whether the current cycle is open.
+3. **Editing:** controlled fields store name, email, optional organization or
+   registration text, background/year, selected roles, motivation, experience,
+   links, weekly hours, and consent.
+4. **Submitting:** `submitting` disables repeat submission while the request is
+   in flight.
+5. **Success:** `done` causes a confirmation panel to replace the form.
+6. **Failure:** a message and optional field errors are displayed; the current
+   answers stay in component state for correction/retry.
+
+If the network fails while loading configuration,
+`fetchRecruitmentConfig()` returns `DEFAULT_CONFIG`. The form may still render
+using that static fallback. If the API later rejects a POST or cannot save to
+D1, `submitApplication()` returns `{ ok: false, ... }`; the component does not
+pretend that a local-only submission succeeded.
+
+## Form values and roles
+
+Year/background values are strings such as `"1"`, `"grad"`, and `"other"`.
+The person can select at most `config.limits.maxRoles` different role IDs.
+When the special `other` role is selected, the `otherRole` field is included.
+The optional `regNo` field is also used for college/organization text, so the
+interface supports builders who have no student registration number.
+
+The links input is a single text box. `linkList` splits on spaces, commas, or
+newlines, trims each entry, and removes empty strings before sending the
+request. The server still validates each URL.
+
+## Confirmation wording
+
+The client accepts `created`, `updated`, and `received` result statuses. The
+current Function responds with `received` after a successful D1 write. The
+confirmation panel uses the status value for wording, but it never shows a
+confirmation before the server success response arrives.
+
+## Read next
+
+- [JoinForm state and handlers](/02-recruitment/form-state-and-validation)
+- [Trace the complete request path](/00-start-here/request-from-click-to-database)
+- [Failure behavior and privacy](/02-recruitment/privacy-and-failure-behavior)

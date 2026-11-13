@@ -1,0 +1,75 @@
+---
+title: "Homepage section composition"
+description: "Follow src/app/page.tsx from the Hero through the content-driven sections and project showcase to the final call to action."
+---
+
+## The page is a composition
+
+`src/app/page.tsx` imports `Hero`, several named functions from `Sections.tsx`,
+and `AmazeCCShowcase` from `Showcase.tsx`. Its `Home` function returns a React
+fragment containing these sections in visible order:
+
+1. `Hero`
+2. `TechMarquee`
+3. `Stats`
+4. `Mission`
+5. A decorative `Thread`
+6. `AmazeCCShowcase`
+7. `Teams`
+8. A second decorative `Thread`
+9. `Journey`
+10. `FinalCta`
+
+The fragment `<>...</>` groups siblings without adding an extra HTML element.
+The `id` and `flip` props on `Thread` configure its placement/appearance.
+Because `Home` has no state or browser event handlers, it can stay a server
+component.
+
+## Responsibilities by module
+
+| Source | Responsibility |
+|---|---|
+| `src/components/site/Hero.tsx` | Main headline, primary/secondary links, ribbon, and animated collaborator cursors |
+| `src/components/site/Sections.tsx` | Technology marquee, animated metrics, mission, teams, timeline, CTA, and ribbon thread |
+| `src/components/site/Showcase.tsx` | AmazeCC feature cards and GoRobo catalog summary |
+| `src/components/site/FeatureVisuals.tsx` | Small HTML/CSS illustrations selected by a typed feature key |
+| `src/content/site.ts` | Most headline, paragraph, team, metric, timeline, and project data |
+| `src/components/site/Reveal.tsx` | Scroll reveal and count-up behavior used by sections |
+
+The page component mostly decides composition. Visual structure stays in the
+section components; copy and repeated records stay in the content module.
+
+## How data becomes sections
+
+`Sections.tsx` imports arrays and objects such as `TECH`, `STATS`, `MISSION`,
+`OBJECTIVES`, `TEAMS`, `JOURNEY`, and `FINAL_CTA`. Array `.map()` calls produce
+repeated React children. Each child uses a stable key like `key={s.label}` so
+React can match it when data changes.
+
+`Showcase.tsx` reads `AMAZECC.features` and `GOROBO.categories`. A feature's
+`visual` string selects a component in `FeatureVisualView`; the union type
+`FeatureVisual` keeps that key within the supported illustration set. A data
+entry changes content/visual selection without changing the outer page order.
+
+## Add a homepage section
+
+<Steps>
+  <Step title="Decide who owns the content">
+    Put repeated, editorial text or records in `src/content/site.ts`. Keep interaction state and request code with the component that owns that behavior.
+  </Step>
+  <Step title="Build a focused component">
+    Add a component under `src/components/site/` and accept typed props for values it needs.
+  </Step>
+  <Step title="Place it in the route">
+    Import and render it in `src/app/page.tsx` at the intended location.
+  </Step>
+  <Step title="Check semantics and motion">
+    Use meaningful headings/sections, keyboard-operable controls, accessible names, and the reduced-motion behavior already used in the site.
+  </Step>
+</Steps>
+
+## Read next
+
+- [Content model and TypeScript types](/01-marketing-site/content-model)
+- [Interactions and accessibility](/01-marketing-site/interaction-and-accessibility)
+- [Homepage code tour](/04-code-tour/homepage-layout-and-section-composition)

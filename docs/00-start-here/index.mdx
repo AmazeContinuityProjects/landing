@@ -1,0 +1,34 @@
+---
+title: "Landing site handbook"
+description: "A beginner-friendly guide to the Amaze Continuity Projects website, its recruitment application, and Cloudflare runtime."
+---
+
+This handbook explains the source in this repository: the public site, its
+recruitment form, the Cloudflare Pages Function that receives applications,
+and the D1 database that stores them.
+
+It is written for developers who know HTML but are learning TypeScript, React,
+Next.js, HTTP, serverless functions, and SQL. You can read it in order, or
+follow a request from the browser to its database row.
+
+<Columns cols={2}>
+  <Card title="Understand the site" icon="panels-top-left" href="/00-start-here/site-in-five-minutes">
+    Learn which routes are the marketing site, recruitment form, and project showcases.
+  </Card>
+  <Card title="Run it locally" icon="terminal" href="/00-start-here/quickstart">
+    Start the full Cloudflare Pages preview, including the Function and local D1.
+  </Card>
+  <Card title="Follow an application" icon="workflow" href="/00-start-here/request-from-click-to-database">
+    Trace data from a form submit through validation and a D1 write.
+  </Card>
+  <Card title="Read the implementation" icon="code" href="/04-code-tour/index">
+    Walk through the form, API Function, shared site layout, and recurring syntax.
+  </Card>
+</Columns>
+
+## Start with these pages
+
+- [The site in five minutes](/00-start-here/site-in-five-minutes)
+- [Run the full local preview](/00-start-here/quickstart)
+- [Understand the request path](/00-start-here/request-from-click-to-database)
+- [Read the repository map](/05-reference/repository-map)

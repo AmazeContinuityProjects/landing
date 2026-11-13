@@ -1,0 +1,63 @@
+---
+title: "Routes and shared layout"
+description: "Understand the Next.js App Router file-to-URL mapping, the root layout, page metadata, static export, and Pages Function routing."
+---
+
+## App Router: folders become URL segments
+
+Next.js uses the `src/app/` directory as a route map. A `page.tsx` file makes a
+URL page; folders between `app/` and `page.tsx` become URL segments.
+
+| File | URL |
+|---|---|
+| `src/app/page.tsx` | `/` |
+| `src/app/join/page.tsx` | `/join/` |
+| `src/app/projects/amazecc/page.tsx` | `/projects/amazecc/` |
+| `src/app/projects/gorobo/page.tsx` | `/projects/gorobo/` |
+
+The `trailingSlash: true` setting in `next.config.ts` means the generated page
+URLs end in `/`. Internal `<Link>` components use paths such as `/join` and
+Next.js resolves them using the app routing setup.
+
+## Root layout
+
+`src/app/layout.tsx` exports `RootLayout`, which receives `children`, the route
+content to place inside the site shell. It also exports `metadata` and
+`viewport` values consumed by Next.js for browser title/description and the
+browser theme color.
+
+The layout loads Archivo, Instrument Sans, and JetBrains Mono through
+`next/font/google`, assigning each font a CSS variable. It imports global CSS,
+then renders an English `<html>` element and a `<body>` with the shared theme.
+Inside it, the skip link comes before `GlassNav`, then the `<main id="main">`
+receives the current page, followed by `SiteFooter` and `CustomCursor`.
+
+`Readonly<{ children: React.ReactNode }>` is a TypeScript type. `Readonly`
+prevents the object fields from being reassigned in the component; `ReactNode`
+is a value React can render. JSX `{children}` inserts the route page at that
+position.
+
+## Metadata and file conventions
+
+`src/app/join/page.tsx` exports route-specific `metadata`, which overrides or
+extends the page title and description. Icons use Next's file conventions:
+`src/app/icon.png`, `favicon.ico`, `apple-icon.png`, and `manifest.json`.
+
+## Static export and Function routing
+
+`next.config.ts` sets `output: "export"`, so `next build` writes HTML and
+assets to `out/` instead of starting a long-running Next.js server. Images are
+marked `unoptimized` because the static export does not run Next's image
+optimization server. The `remotePatterns` entry allows the configured
+GitHub avatar hostname at build time.
+
+`wrangler.json` points Cloudflare Pages at `out/`. `public/_routes.json`
+includes `/api/*`, so those requests can reach Pages Functions. The file
+`functions/api/recruitment.ts` maps to `/api/recruitment`. Ordinary site
+routes are static files; that API path is server code executed by Cloudflare.
+
+## Read next
+
+- [Static export and Pages Functions](/03-cloudflare/static-export-and-pages-functions)
+- [Homepage composition](/01-marketing-site/homepage-sections)
+- [Deployment configuration](/03-cloudflare/configuration-reference)

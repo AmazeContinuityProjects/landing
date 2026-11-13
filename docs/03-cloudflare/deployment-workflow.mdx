@@ -1,0 +1,12 @@
+---
+title: Deployment workflow
+description: What GitHub Actions does when code is pushed to the main branch.
+---
+
+`.github/workflows/deploy-cloudflare.yml` starts on every push to `main` and on manual dispatch. It installs Node 22 dependencies, checks the Cloudflare credentials and database configuration, runs the test suite, checks TypeScript, creates the static build, applies remote D1 migrations, and uploads `out/` to Pages project `acp-landing` on branch `main`.
+
+The sequence matters: failures in tests, type checking, build, or migration prevent the final upload. A migration can still make a database change before a later upload failure, so review schema changes as production changes.
+
+<Warning>Because the workflow has no path filter, a docs-only merge to `main` also runs tests, build, remote migrations, and production deployment. Check the Actions run after merging handbook changes.</Warning>
+
+The separate docs notification workflow watches changes under `docs/` on `main`. It uses `DOCS_DISPATCH_TOKEN` to send a `docs-updated` repository dispatch to `AmazeContinuityProjects/docs`. That dispatch asks the aggregator to copy this site's docs into its `landing` section. It does not perform the Cloudflare Pages deployment itself.

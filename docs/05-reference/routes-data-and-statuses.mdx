@@ -1,0 +1,26 @@
+---
+title: Routes, data, and statuses
+description: A compact reference to the app URLs, API contract, and response behavior.
+---
+
+## Site routes
+
+| URL | Source | What it represents |
+| --- | --- | --- |
+| `/` | `src/app/page.tsx` | Marketing homepage, assembled from static content and sections. |
+| `/join/` | `src/app/join/page.tsx` | Recruitment application form. |
+| `/projects/amazecc/` | `src/app/projects/amazecc/` | Local product showcase, not the live AmazeCC application. |
+| `/projects/gorobo/` | `src/app/projects/gorobo/` | Static illustrative storefront and local cart, not a live shop. |
+
+## Recruitment API
+
+| Request | Success behavior | Common errors |
+| --- | --- | --- |
+| `GET /api/recruitment` | `200` JSON with public default form configuration. It never lists applicants. | Network/runtime failures may prevent the client from loading configuration. |
+| `POST /api/recruitment` | `200` generic `{ success: true, status: "received" }` after a valid submission or honeypot response. | `400` invalid JSON/fields, `403` closed cycle, `415` wrong content type, `503` missing DB or failed write. |
+
+The actual response union in `src/lib/recruitment.ts` is the source of truth. The client type also allows `created` and `updated`, but the current Function returns `received` for both new and repeat applications. Responses deliberately do not disclose whether an email matched an existing record.
+
+## Persisted data
+
+D1 stores applicant records in `applications`, keyed uniquely by cycle and case-insensitive email. Roles and links are JSON text. GET exposes the form configuration only; there is no public endpoint for reading submitted applications.

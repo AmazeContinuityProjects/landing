@@ -1,0 +1,21 @@
+---
+title: Configuration reference
+description: A map of the source files and environment settings that configure Landing.
+---
+
+| File or setting | Purpose |
+| --- | --- |
+| `next.config.ts` | Enables static export, trailing slash URLs, and unoptimized image output. |
+| `wrangler.json` | Names the Pages project and `out` directory, sets the compatibility date, and declares the D1 `DB` binding and migration directory. |
+| `public/_routes.json` | Routes `/api/*` requests through the Pages Function runtime. |
+| `migrations/*.sql` | Versioned D1 schema changes. |
+| `src/lib/recruitment-config.ts` | Public recruitment cycle, open flag, limits, and role choices compiled into the site and returned by the API. |
+| `NEXT_PUBLIC_API_URL` | Optional API origin. Empty means the browser uses the current site origin. A non-empty value is normalized before `/api/recruitment` is appended. |
+| `CLOUDFLARE_API_TOKEN` | GitHub Actions secret used by Wrangler to deploy and migrate. |
+| `CLOUDFLARE_ACCOUNT_ID` | Account identifier set in the deployment workflow. |
+| `CLOUDFLARE_D1_DATABASE_ID` | Optional repository variable read by `scripts/configure-cloudflare.mjs`; it can override the ID in `wrangler.json`. |
+| `DOCS_DISPATCH_TOKEN` | GitHub secret used by the documentation notification workflow to request aggregation in the docs repository. |
+
+The `NEXT_PUBLIC_` prefix means a value can be embedded in browser-delivered code. Never put a password, API token, or private database credential in a `NEXT_PUBLIC_` variable. Recruitment limits in the client are for a good form experience; the Function validates the submitted values again on the server.
+
+The database ID is intentionally not repeated in this handbook. The configuration script validates the value and writes it to `wrangler.json`; consult repository settings when operating the deployment.

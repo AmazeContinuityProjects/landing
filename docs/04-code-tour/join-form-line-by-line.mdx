@@ -1,0 +1,32 @@
+---
+title: JoinForm step by step
+description: Read the browser-side recruitment form from imports through its rendered states.
+---
+
+Source: `src/components/join/JoinForm.tsx`. The file is a client component because it uses React state, browser events, and an effect. The `'use client'` directive at the top marks that boundary for Next.js.
+
+## Imports and state
+
+The imports bring in React hooks, the compiled recruitment configuration, typed API helpers, and reusable form controls. Each `useState` call stores one piece of interface state: the loaded configuration, loading or submission status, field errors, completion status, selected roles, and form values. Keeping values in state makes React rerender when the user edits or submits the form.
+
+The `useEffect` loads the public recruitment configuration when the component mounts. Its async request updates the configuration if it succeeds; failure sets a visible load error. The empty dependency list means this effect is intended to run once for this mounted form. Cleanup/timeout behavior belongs to the API helper in `src/lib/recruitment.ts`.
+
+## Input handlers and derived values
+
+Input `onChange` handlers update the matching value. Role selection uses a functional state update so it works from the latest selection array, and it respects `config.maxRoles` before adding another role. Removing a selected role produces a new array; React state should be replaced immutably rather than mutating the old array in place.
+
+The `linkList` `useMemo` takes the links text, splits on commas or whitespace, trims/filters empty pieces, and returns at most the browser-side configured number. The expression in brackets is its dependency list: a changed links string recalculates the list.
+
+## Submit handler
+
+The handler receives a form submit event and calls `preventDefault()` so the browser does not navigate away and perform a traditional form post. It checks the email's basic shape for quick feedback, sets the submitting state, and calls `submitApplication` with the current values. `Number(hours)` converts the input's string value into a JavaScript number. Empty optional values are sent as `undefined` where the payload allows them.
+
+The `try`/result handling shows the completion state only for a successful API result. A rejected or failed request leaves the applicant able to retry and displays errors. The browser checks improve usability, but the Pages Function repeats every important rule because a user can bypass browser code.
+
+## Render branches
+
+The return value selects what the user sees: load error, loading skeleton while configuration is absent, a closed-cycle message when `open` is false, confirmation after success, or the form itself. The form's `noValidate` disables the browser's automatic validation bubble so the component can display its own messages. `required`, `maxLength`, and input types still communicate constraints and help assistive technology, but the server remains authoritative.
+
+The form includes a hidden `website` honeypot. Ordinary users do not fill it; the server treats a filled value as a generic received response without saving the submission. Consent is explicit and required. `aria-*`, labels, and error text connect controls with accessible names and feedback.
+
+For exact current fields and limits, read `src/lib/recruitment-config.ts`, then compare this component with `functions/api/recruitment.ts`.

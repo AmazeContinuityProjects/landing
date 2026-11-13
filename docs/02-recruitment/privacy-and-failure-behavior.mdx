@@ -1,0 +1,61 @@
+---
+title: "Privacy and failure behavior"
+description: "Understand what applicant data is collected, which values are public, how failures are reported, and where application rows can be reviewed."
+---
+
+import ApplicantDataWarning from "/snippets/applicant-data-warning.mdx";
+
+<ApplicantDataWarning />
+
+## What the browser sends
+
+The form posts name, email, optional college/organization/registration text,
+background/year, role IDs, optional role detail, motivation, optional
+experience, links, weekly hours, consent, and an invisible honeypot field.
+Only fictional values belong in docs examples.
+
+The public GET returns configuration and limits, not applicant rows. There is
+no public GET route for application history. `functions/api/recruitment.ts`
+does not log field values; a failed D1 write logs only a generic error label.
+Cloudflare D1 account access is a separate maintainer permission boundary.
+
+## How failures appear
+
+| Failure | Server response / browser behavior |
+|---|---|
+| Invalid fields | HTTP 400 with field-specific messages; the form highlights fields |
+| Cross-origin browser request | HTTP 403 with a generic origin message |
+| Body over 24,000 bytes | HTTP 413 |
+| Non-JSON request | HTTP 415 |
+| D1 binding missing or write fails | HTTP 503; the form keeps answers for retry |
+| Network timeout/offline/non-JSON response | client result is failure; no success panel is shown |
+| Honeypot contains text | generic received response with no database write |
+
+`submitApplication()` has a 15-second abort timeout. `fetchRecruitmentConfig()`
+uses a 10-second timeout and falls back to the static default config. A
+submission only sets the UI's `done` state when the HTTP response is successful
+and its JSON contains `success: true`.
+
+## Origin check nuance
+
+When a browser sends an `Origin` header, the Function requires it to match the
+request URL's origin. Requests without an Origin header are not rejected by
+this specific check. This is not a replacement for validating every field or
+for protecting maintainer access to D1.
+
+## Safe operational examples
+
+- Use synthetic names and reserved example domains in docs and screenshots.
+- Don't paste a request body or full browser screenshot from a real applicant.
+- Don't add application values to console logs or exception messages.
+- Keep Cloudflare tokens in GitHub Secrets; never use `NEXT_PUBLIC_` for a
+  secret.
+- A preview should bind to a separate D1 database before it is used with real
+  applicant information. The current repository config does not declare a
+  dedicated preview database binding.
+
+## Related pages
+
+- [D1 schema](/02-recruitment/database-model-and-upserts)
+- [Local test setup](/02-recruitment/testing-the-flow)
+- [Cloudflare deployment](/03-cloudflare/deployment-workflow)

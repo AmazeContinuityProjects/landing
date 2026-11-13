@@ -1,0 +1,39 @@
+---
+title: TypeScript, React, and HTTP syntax
+description: Plain-language explanations of recurring syntax used in this repository.
+---
+
+## TypeScript syntax
+
+- `type Result = ...` gives a name to a shape or set of possible values. A union such as `"created" | "updated"` permits only those string literals at compile time.
+- `interface Props { ... }` describes the properties a component accepts. `type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & { ... }` combines the normal HTML button attributes with project-specific properties using `&` (intersection).
+- `string[]` means an array whose elements are strings. `string | undefined` means either a string or no value. `?` on a property makes it optional.
+- `as const` tells TypeScript to keep literal values narrow and readonly; it does not freeze an object at runtime. `satisfies SomeType` checks compatibility while preserving more specific inferred types.
+- `import type { X } from "..."` imports a type for static checking. Types are erased from emitted JavaScript; value imports remain executable code.
+- `Readonly<T>` makes properties readonly to TypeScript callers. It does not deep-freeze the runtime object.
+- `value as SomeType` is an assertion, not runtime validation. JSON from a request must still be checked before it is trusted.
+
+## React syntax
+
+- A function such as `function JoinForm() { return (...) }` is a React component. Uppercase naming lets JSX treat it as a component rather than an HTML tag.
+- JSX resembles HTML but is JavaScript syntax: use `className`, close every element, and place expressions inside `{...}`.
+- `useState(initial)` stores a value between renders. Calling its setter schedules a new render. The functional form `setItems(previous => ...)` calculates from the latest state.
+- `useEffect(() => { ...; return cleanup }, [dependencies])` synchronizes with something outside rendering. The dependency list controls when React runs it; a returned cleanup removes listeners, timers, or other resources.
+- `useMemo(() => expression, [dependencies])` caches a calculated value until a dependency changes. It is a performance tool, not a substitute for correct data flow.
+- `onChange={event => ...}` passes a function that React calls when the input changes. `event.target.value` is the current textual input value.
+
+## JavaScript and browser syntax
+
+- `?.` stops property access when the value to its left is nullish. `??` uses a fallback only for `null` or `undefined`, unlike `||`, which also falls back for `0`, `false`, and an empty string.
+- `...items` spreads iterable values into a new array; `{ ...object }` copies enumerable properties into a new object. These are shallow copies.
+- `async` functions return a Promise. `await` pauses that function until the Promise settles; it does not block the browser's entire JavaScript thread.
+- `try / catch / finally` handles thrown failures and allows cleanup or state reset in `finally`.
+- `requestAnimationFrame(callback)` schedules work before a browser paint. `IntersectionObserver` reports when an element enters or leaves a configured viewport region.
+
+## HTTP and SQL
+
+- `fetch(url, { method, headers, body })` sends an HTTP request. JSON request bodies are produced with `JSON.stringify(value)` and should declare `Content-Type: application/json`.
+- An HTTP status such as 400 or 503 is separate from the JSON body. Callers should check both transport success (`response.ok`) and the application's typed result.
+- `new URL(value)` parses a URL and can reject malformed input. Checking `url.protocol` restricts accepted schemes.
+- SQL `?` placeholders represent data values in a prepared statement. Bind values separately rather than building SQL by concatenating user input. D1 `prepare(...).bind(...).run()` follows this pattern.
+- `JSON.stringify` converts JavaScript data to JSON text; `JSON.parse` converts JSON text to a JavaScript value. Parsed input still needs shape and value checks.

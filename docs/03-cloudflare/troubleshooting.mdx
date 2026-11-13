@@ -1,0 +1,17 @@
+---
+title: Troubleshooting
+description: Diagnose common local, API, D1, and deployment problems by following the request path.
+---
+
+| Symptom | First checks |
+| --- | --- |
+| Homepage works but the join form says it cannot load | Inspect the browser Network panel for `GET /api/recruitment`; confirm the deployed Functions route includes `/api/*` and the same-origin path is correct. |
+| `npm run dev` shows the form but submission fails | This server does not run Cloudflare Pages Functions. Build and use `npm run preview` to test the Pages runtime. |
+| API returns 503 | Check the Pages Function logs and confirm its D1 `DB` binding exists. The endpoint deliberately returns a generic error instead of database details. |
+| API returns 415 | The request must use a JSON content type, normally `application/json`, and a JSON body. |
+| API returns 400 with field errors | Compare submitted values against `src/lib/recruitment-config.ts` and the server checks in `functions/api/recruitment.ts`. Client checks are not authoritative. |
+| Deployment fails before build | Check the named GitHub secret/variable and the Cloudflare configuration validation output. Do not print secret values into logs. |
+| Remote migration fails | Read the failing migration and Wrangler output. Do not blindly retry a partially understood schema operation. |
+| Docs aggregation did not happen | Check the docs notification workflow, `DOCS_DISPATCH_TOKEN` presence, then the `docs` repository's `docs-updated` workflow run. |
+
+When investigating an application, use synthetic test data. Do not paste applicant names, email addresses, motivations, or other submitted information into public logs or issue reports.

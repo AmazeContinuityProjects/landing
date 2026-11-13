@@ -1,0 +1,127 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Amaze Continuity Projects",
+  "colors": {
+    "primary": "#3C4CFF"
+  },
+  "contextual": {
+    "options": ["copy", "view", "mcp", "cursor", "vscode"]
+  },
+  "markdown": {
+    "instructions": "Explain this site to a junior developer who knows HTML. Name the source path and explain relevant TypeScript, React, browser, HTTP, Cloudflare Pages Function, and SQL concepts. Distinguish static showcase data from the real recruitment flow. Treat applicant data as sensitive. Do not invent runtime or backend behavior."
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Start here",
+        "icon": "rocket",
+        "expanded": true,
+        "pages": [
+          {
+            "group": "Start here",
+            "root": "00-start-here/index",
+            "pages": [
+              "00-start-here/site-in-five-minutes",
+              "00-start-here/quickstart",
+              "00-start-here/request-from-click-to-database"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Marketing site",
+        "icon": "panels-top-left",
+        "expanded": true,
+        "pages": [
+          {
+            "group": "Site architecture",
+            "root": "01-marketing-site/index",
+            "pages": [
+              "01-marketing-site/routes-and-layout",
+              "01-marketing-site/homepage-sections",
+              "01-marketing-site/content-model",
+              "01-marketing-site/interaction-and-accessibility",
+              "01-marketing-site/project-showcase-pages"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Recruitment",
+        "icon": "users-round",
+        "expanded": true,
+        "pages": [
+          {
+            "group": "Application flow",
+            "root": "02-recruitment/index",
+            "pages": [
+              "02-recruitment/applicant-journey",
+              "02-recruitment/form-state-and-validation",
+              "02-recruitment/recruitment-api",
+              "02-recruitment/database-model-and-upserts",
+              "02-recruitment/privacy-and-failure-behavior",
+              "02-recruitment/testing-the-flow"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Cloudflare and deployment",
+        "icon": "cloud",
+        "expanded": true,
+        "pages": [
+          {
+            "group": "Runtime and operations",
+            "root": "03-cloudflare/index",
+            "pages": [
+              "03-cloudflare/static-export-and-pages-functions",
+              "03-cloudflare/d1-migrations-and-local-data",
+              "03-cloudflare/configuration-reference",
+              "03-cloudflare/deployment-workflow",
+              "03-cloudflare/troubleshooting"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Code tours",
+        "icon": "code",
+        "expanded": true,
+        "pages": [
+          {
+            "group": "Read the implementation",
+            "root": "04-code-tour/index",
+            "pages": [
+              "04-code-tour/typescript-react-and-http-syntax",
+              "04-code-tour/join-form-line-by-line",
+              "04-code-tour/recruitment-function-line-by-line",
+              "04-code-tour/homepage-layout-and-section-composition",
+              "04-code-tour/reveal-and-cursor-effects",
+              "04-code-tour/shared-components-and-styling",
+              "04-code-tour/source-module-catalog"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Reference",
+        "icon": "book",
+        "expanded": true,
+        "pages": [
+          {
+            "group": "Reference",
+            "root": "05-reference/index",
+            "pages": [
+              "05-reference/repository-map",
+              "05-reference/configuration-and-environment-variables",
+              "05-reference/routes-data-and-statuses",
+              "05-reference/glossary",
+              "05-reference/ai-and-mintlify-tools"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

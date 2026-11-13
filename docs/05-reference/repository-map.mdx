@@ -1,0 +1,22 @@
+---
+title: Repository map
+description: A quick route from a task to the folder that owns the code.
+---
+
+| If you need to change... | Start here |
+| --- | --- |
+| Homepage words, stats, feature cards, teams, milestones | `src/content/site.ts`, then the relevant `src/components/site/` component. |
+| Shared navigation, footer, metadata, or fonts | `src/app/layout.tsx` and its imported components. |
+| Page route or page composition | `src/app/`; each directory maps to a URL segment. |
+| Recruitment fields and choices | `src/lib/recruitment-config.ts`, `src/components/join/JoinForm.tsx`, and `functions/api/recruitment.ts`. |
+| Recruitment request/response types or fetch behavior | `src/lib/recruitment.ts` and `functions/api/recruitment.ts`. |
+| D1 schema | Add a migration under `migrations/`; coordinate with the SQL and Function code. |
+| Motion and pointer visuals | `src/components/Reveal.tsx`, `CustomCursor.tsx`, `CollaboratorCursors.tsx`, and `src/app/globals.css`. |
+| Shared buttons/cards/form controls | `src/components/ui/`. |
+| Static export or Pages routing | `next.config.ts`, `wrangler.json`, and `public/_routes.json`. |
+| Recruitment behavior tests | `tests/recruitment.test.ts`. |
+| Cloudflare D1 configuration | `scripts/configure-cloudflare.mjs` and deployment workflow settings. |
+| Production deploy | `.github/workflows/deploy-cloudflare.yml`. |
+| Mintlify handbook or aggregator notification | `docs/`, `docs/docs.json`, `.github/workflows/notify-docs.yml`. |
+
+The project dependency versions and commands are in `package.json`; exact installed package versions are locked by `package-lock.json`.
